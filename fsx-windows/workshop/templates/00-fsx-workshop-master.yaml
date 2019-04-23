@@ -53,7 +53,7 @@ Metadata:
       AvailabilityZones:
         default: Availability Zones
       CopyTagsToBackups:
-        default: Copy tags to backups
+        default: Copy tags to backups (optional)
       DailyAutomaticBackupStartTime:
         default: Daily backup start time (optional)
       ExternalAccessCidr:
@@ -124,7 +124,7 @@ Parameters:
     - c5.xlarge
     - m5.large
     - m5.xlarge
-    Default: m5.large
+    Default: c5.large
     Description: Amazon EC2 instance type - Linux server
     Type: String
   NssInstanceType:
@@ -142,7 +142,7 @@ Parameters:
     - c5.xlarge
     - m5.large
     - m5.xlarge
-    Default: m5.large
+    Default: c5.large
     Description: Amazon EC2 instance type - Windows server
     Type: String
   MadDnsName:
@@ -250,7 +250,7 @@ Resources:
           !Ref WeeklyMaintenanceStartTime
       TemplateURL: https://s3.amazonaws.com/amazon-fsx/workshop/windows/04-fsx-windows.yaml
   Nss:
-    DependsOn: [ Sg ]
+    DependsOn: [ Mad ]
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
@@ -266,33 +266,33 @@ Resources:
           !Join [ ',', [ !GetAtt [ Vpc, Outputs.PublicSubnet0 ], !GetAtt [ Vpc, Outputs.PublicSubnet1 ] ] ]
       TemplateURL: https://s3.amazonaws.com/amazon-fsx/workshop/windows/04-namespace-servers.yaml
   Win:
-    DependsOn: [ Sg ]
+    DependsOn: [ Mad ]
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
         DirectoryId:
           !GetAtt [ Mad, Outputs.DirectoryId ]
         InstanceType:
-          !Ref NssInstanceType
+          !Ref WinInstanceType
         KeyName:
           !Ref KeyName
-        SecurityGroups:
+        SecurityGroup:
           !GetAtt [ Sg, Outputs.ExternalAccessSecurityGroup ]
-        Subnet:
+        Subnets:
           !GetAtt [ Vpc, Outputs.PublicSubnet0 ]
       TemplateURL: https://s3.amazonaws.com/amazon-fsx/workshop/windows/04-windows-instance.yaml
   Lin:
-    DependsOn: [ Sg ]
+    DependsOn: [ Mad ]
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
         InstanceType:
-          !Ref NssInstanceType
+          !Ref LinInstanceType
         KeyName:
           !Ref KeyName
         SecurityGroups:
           !GetAtt [ Sg, Outputs.ExternalAccessSecurityGroup ]
-        Subnet:
+        Subnets:
           !GetAtt [ Vpc, Outputs.PublicSubnet0 ]
       TemplateURL: https://s3.amazonaws.com/amazon-fsx/workshop/windows/04-linux-instance.yaml
 
