@@ -84,18 +84,8 @@ sudo mount -t cifs //<file-system-dns-name>/d$ /mnt/fsx --verbose -o vers=2.0,us
 - Run a simple touch command to write to the /share file share.
 
 ```sh
-touch amazon_linux_test.txt
-```
-
-- What two things can you do to write to these shares?
-
-```sh
+cd /mnt/fsx/share
 sudo touch amazon_linux_test.txt
-```
-
-```sh
-sudo chown ec2-user:ec2-user /mnt/fsx/share
-touch amazon_linux_test.txt
 ```
 
 

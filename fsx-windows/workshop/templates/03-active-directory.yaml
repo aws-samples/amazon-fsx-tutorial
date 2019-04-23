@@ -79,6 +79,17 @@ Resources:
         SecretStringTemplate: '{"username": "admin"}'
         GenerateStringKey: "password"
         PasswordLength: 32
+  DhcpOptions:
+    Type: AWS::EC2::DHCPOptions
+    Properties: 
+      DomainName: !Ref MadDnsName
+      DomainNameServers: !GetAtt Directory.DnsIpAddresses
+  DhcpOptionsAssociation:
+    Type: AWS::EC2::VPCDHCPOptionsAssociation
+    Properties: 
+      DhcpOptionsId: !Ref DhcpOptions
+      VpcId: !Ref VpcId
+
 
 Outputs:
   DirectoryId:
