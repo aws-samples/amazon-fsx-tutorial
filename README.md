@@ -6,7 +6,7 @@ Get AWSome hands-on experience with Amazon FSx for Windows File Server.
 
 
 
-[Workshop](workshop)
+[Workshop](fsx-windows)
 
 ## License Summary
 
