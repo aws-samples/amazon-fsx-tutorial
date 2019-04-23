@@ -17,13 +17,13 @@ Errors or corrections? Email us at [darrylo@amazon.com](mailto:darrylo@amazon.co
 ---
 ### Step 5.1: Log on to the Linux EC2 instance
 
-- From the Amazon EC2 Console, select the **Amazon Linux - FSx Workshop** instance
+- From the Amazon EC2 Console, select the **Linux Server** instance
 - Click **Connect**
 - Use the connection information to SSH to the instance using your laptop's terminal application
 
 ### Step 5.2: Install linux applications
 
-> Complete the following steps in your SSH session connected to the **Amazon Linux - FSx Workshop** instance
+> Complete the following steps in your SSH session connected to the **Linux Server** instance
 
 - Run the following script
 - **cifs-utils** is the only utility needed to mount the FSx for Windows file system on Amazon Linux, the other utilites will be used for testing and monitoring performance
@@ -37,7 +37,7 @@ git clone https://github.com/bengland2/smallfile.git
 
 ### Step 5.3: Mount the file system's default file share
 
-> Complete the following steps in your SSH session connected to the **Amazon Linux - FSx Workshop** instance
+> Complete the following steps in your SSH session connected to the **Linux Server** instance
 
 - Run the following script to create a local mount point and mount the file system
 - You will be prompted to enter the password of the AD user **admin** (e.g. admin@example.com)
@@ -101,7 +101,7 @@ touch amazon_linux_test.txt
 
 ### Step 5.4: Run performance tests
 
-> Complete the following steps in your SSH session connected to the **Amazon Linux - FSx Workshop** instance
+> Complete the following steps in your SSH session connected to the **Linux Server** instance
 
 - Run scripts below to evaluate file share performance. Change the path to access any of the file shares you've created (e.g. of=/mnt/fsx/share, of=/mnt/fsx/data, of=/mnt/fsx/marketing, etc.)
 
