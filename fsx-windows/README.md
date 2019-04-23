@@ -19,7 +19,7 @@ fsx.w.wrkshp.2019.04
 
 This will show solutions architects how to take advantage of a fully-managed Windows native file system for various application workloads like home directories, web serving & content management, enterprise applications, analytics, and media & entertainment.
 
-This workshop will cover how to create FSx for Windows file systems and initiate an incremental file-system-consistent backup, as well as how to access the file system from a broad range of clients, from Windows and Linux EC2 instances to Amazon WorkSpaces. We will also restore a backup as a new file system and setup Microsoft Distributed File System (DFS) Replication between two file systems across Availability Zones. For those of you who want to consolidate multiple file shares under a single namespace, we'll spend time setting up DFS Namespaces to consolidate multiple shares under a single namespace.
+This workshop will cover how to create FSx for Windows file systems and initiate an incremental file-system-consistent backup, as well as how to access the file system from Windows and Linux EC2 instances. We will also restore a backup as a new file system and setup Microsoft Distributed File System (DFS) Replication between two file systems across Availability Zones. For those of you who want to consolidate multiple file shares under a single namespace, we'll spend time setting up DFS Namespaces to consolidate multiple shares under a single namespace.
 
 ### Informational
 
