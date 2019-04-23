@@ -19,7 +19,7 @@ Metadata:
     - Label:
         default: File system configuration
       Parameters:
-        - Name
+        - FileSystemName
         - StorageCapacity
         - ThroughputCapacity
         - SubnetId
@@ -38,8 +38,8 @@ Metadata:
         default: Copy tags to backups
       DailyAutomaticBackupStartTime:
         default: Daily backup start time (optional)
-      Name:
-        default: Name
+      FileSystemName:
+        default: File system name
       SecurityGroupId:
         default: Security group
       StorageCapacity:
@@ -74,7 +74,7 @@ Parameters:
     AllowedPattern: ^$|([01]\d|2[0-3]):?([0-5]\d)$
     Description: Enter the daily automatic backup start time in hour:minute UTC format (e.g. 11:30pm = 23:30)
     Type: String
-  Name:
+  FileSystemName:
     Default: fsx-windows-workshop
     AllowedPattern: ^$|(.*)$
     Description: Name of file system - name value of key-value pair
@@ -130,7 +130,7 @@ Resources:
         - !Ref SecurityGroupId
       Tags:
         - Key: Name
-          Value: !Ref Name
+          Value: !Ref FileSystemName
       WindowsConfiguration:
         ActiveDirectoryId: !Ref DirectoryId
         AutomaticBackupRetentionDays: !Ref AutomaticBackupRetentionDays

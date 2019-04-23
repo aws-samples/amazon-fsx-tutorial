@@ -50,7 +50,15 @@ Click on the link below in the desired AWS region to create the AWS Cloudformati
 - Windows server instance type - accept default
 - Linux server instance type - accept default
 
-![](../images/fsx_for_windows_prerequisites_parameters.png)
+![](../images/stack-parameter-screenshot.png)
+
+
+
+IMPORTANT!! Before selecting "Create stack" at the end of the AWS CloudFormation create stack wizard, make sure you check both boxes in the "Capabilities" section. If not, the stack will fail at the very end (20-35 minutes) and you'll have to start over.
+
+
+![](../images/capabilities-checkboxes-screenshot.png)
+
 
 ---
 

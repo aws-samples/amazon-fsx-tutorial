@@ -260,7 +260,7 @@ Resources:
           !Ref NssInstanceType
         KeyName:
           !Ref KeyName
-        SecurityGroups:
+        SecurityGroup:
           !GetAtt [ Sg, Outputs.ExternalAccessSecurityGroup ]
         Subnet:
           !Join [ ',', [ !GetAtt [ Vpc, Outputs.PublicSubnet0 ], !GetAtt [ Vpc, Outputs.PublicSubnet1 ] ] ]
