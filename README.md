@@ -1,6 +1,12 @@
-## Amazon Fsx Tutorial
+## Amazon FSx Tutorial
 
-Learn more about Amazon FSx and get hands-on experience with different solution architectures, including using Amazon FSx for Windows File Server for IIS, Visual Studio, ERP applications, with DFS Namespaces and DFS Replication.
+
+
+Get AWSome hands-on experience with Amazon FSx for Windows File Server.
+
+
+
+[Workshop](workshop)
 
 ## License Summary
 
