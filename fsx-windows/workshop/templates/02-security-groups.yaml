@@ -1,7 +1,7 @@
 ---
 AWSTemplateFormatVersion: 2010-09-09
 
-Description: Create Security Groups
+Description: Creates Security Groups
 
 Metadata:
   Authors:

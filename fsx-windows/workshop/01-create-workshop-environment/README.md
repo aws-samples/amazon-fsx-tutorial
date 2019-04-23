@@ -70,14 +70,14 @@ Click on the link below in the desired AWS region to create the AWS CloudFormati
 | us-east-2 | [US East (Ohio)](https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=fsx-windows-workshop&templateURL=https://s3.amazonaws.com/amazon-fsx/workshop/windows/00-fsx-workshop-master.yaml) |
 | us-west-2 | [US West (Oregon)](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=fsx-windows-workshop&templateURL=https://s3.amazonaws.com/amazon-fsx/workshop/windows/00-fsx-workshop-master.yaml) |
 | eu-west-1 | [EU West (Ireland)](https://console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/new?stackName=fsx-windows-workshop&templateURL=https://s3.amazonaws.com/amazon-fsx/workshop/windows/00-fsx-workshop-master.yaml) |
-| eu-west-1 | [AP Southeast (Sydney)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=fsx-windows-workshop&templateURL=https://s3.amazonaws.com/amazon-fsx/workshop/windows/00-fsx-workshop-master.yaml) |
-| eu-west-1 | [AP Northeast (Tokyo)](https://console.aws.amazon.com/cloudformation/home?region=ap-northeast-1#/stacks/new?stackName=fsx-windows-workshop&templateURL=https://s3.amazonaws.com/amazon-fsx/workshop/windows/00-fsx-workshop-master.yaml) |
+| ap-southeast-2 | [AP Southeast (Sydney)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=fsx-windows-workshop&templateURL=https://s3.amazonaws.com/amazon-fsx/workshop/windows/00-fsx-workshop-master.yaml) |
+| ap-northeast-1 | [AP Northeast (Tokyo)](https://console.aws.amazon.com/cloudformation/home?region=ap-northeast-1#/stacks/new?stackName=fsx-windows-workshop&templateURL=https://s3.amazonaws.com/amazon-fsx/workshop/windows/00-fsx-workshop-master.yaml) |
 
 ---
 ## Next section
 ### Click on the link below to go to the next section
 
-| [**Map File Share**](../01-map-file-share) |
+| [**Map File Share**](../02-map-file-share) |
 | :---
 ---
 

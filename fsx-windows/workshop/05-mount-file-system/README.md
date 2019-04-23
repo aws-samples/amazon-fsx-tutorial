@@ -6,37 +6,22 @@
 
 ## Mount file system
 
-### Version 2018.11
+### Version 2019.04
 
-fsx.w.wrkshp.2018.11
+fsx.w.wrkshp.2019.04
 
 ---
-
-© 2018 Amazon Web Services, Inc. and its affiliates. All rights reserved. This work may not be  reproduced or redistributed, in whole or in part, without prior written permission from Amazon Web Services, Inc. Commercial copying, lending, or selling is prohibited.
 
 Errors or corrections? Email us at [darrylo@amazon.com](mailto:darrylo@amazon.com).
 
 ---
-### Prerequisites
-
-* An AWS account with administrative level access
-* An Amazon FSx for Windows File Server
-* An Amazon Linux EC2 instance
-
-WARNING!! This workshop environment will exceed your free-usage tier. You will incur charges as a result of building this environment and executing the scripts included in this workshop. Delete all AWS resources created during this workshop so you don’t continue to incur additional compute and storage charges.
-
----
-### Mount file system
-
-You must first complete [**Prerequisites**](../0-prerequisites) and the previous step [**Backup file system**](../5-backup-file-system)
-
-### Step 6.1: Log on to the Linux EC2 instance
+### Step 5.1: Log on to the Linux EC2 instance
 
 - From the Amazon EC2 Console, select the **Amazon Linux - FSx Workshop** instance
 - Click **Connect**
 - Use the connection information to SSH to the instance using your laptop's terminal application
 
-### Step 6.2: Install linux applications
+### Step 5.2: Install linux applications
 
 > Complete the following steps in your SSH session connected to the **Amazon Linux - FSx Workshop** instance
 
@@ -44,14 +29,13 @@ You must first complete [**Prerequisites**](../0-prerequisites) and the previous
 - **cifs-utils** is the only utility needed to mount the FSx for Windows file system on Amazon Linux, the other utilites will be used for testing and monitoring performance
 
 ```sh
-sudo yum update -y
-sudo yum install -y parallel tree git cifs-utils
-sudo yum install -y --enablerepo=epel nload ioping
+sudo amazon-linux-extras install -y epel 
+sudo yum install -y parallel tree git cifs-utils nload ioping
 git clone https://github.com/bengland2/smallfile.git
 
 ```
 
-### Step 6.3: Mount the file system's default file share
+### Step 5.3: Mount the file system's default file share
 
 > Complete the following steps in your SSH session connected to the **Amazon Linux - FSx Workshop** instance
 
@@ -115,7 +99,7 @@ touch amazon_linux_test.txt
 ```
 
 
-### Step 6.4: Run performance tests
+### Step 5.4: Run performance tests
 
 > Complete the following steps in your SSH session connected to the **Amazon Linux - FSx Workshop** instance
 
@@ -276,7 +260,7 @@ sudo python ~/smallfile/smallfile_cli.py \
 ## Next section
 ### Click on the link below to go to the next section
 
-| [**Restore backup**](../7-restore-backup) |
+| [**Restore backup**](../06-restore-backup) |
 | :---
 ---
 

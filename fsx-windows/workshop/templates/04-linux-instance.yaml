@@ -1,7 +1,7 @@
 ---
 AWSTemplateFormatVersion: 2010-09-09
 
-Description: Launch one Amazon EC2 Linux instance
+Description: Launches one Amazon EC2 Linux instance
 
 Metadata:
   License:

@@ -4,34 +4,19 @@
 
 # **Amazon FSx for Windows File Server**
 
-## Backup file system
+## Restore backup
 
-### Version 2018.11
+### Version 2019.04
 
-fsx.w.wrkshp.2018.11
+fsx.w.wrkshp.2019.04
 
 ---
-
-© 2018 Amazon Web Services, Inc. and its affiliates. All rights reserved. This work may not be  reproduced or redistributed, in whole or in part, without prior written permission from Amazon Web Services, Inc. Commercial copying, lending, or selling is prohibited.
 
 Errors or corrections? Email us at [darrylo@amazon.com](mailto:darrylo@amazon.com).
 
 ---
-### Prerequisites
 
-* An AWS account with administrative level access
-* An Amazon FSx for Windows File Server
-
-WARNING!! This workshop environment will exceed your free-usage tier. You will incur charges as a result of building this environment and executing the scripts included in this workshop. Delete all AWS resources created during this workshop so you don’t continue to incur additional compute and storage charges.
-
----
-### Backup file system
-
-You must first complete [**Prerequisites**](../0-prerequisites) and the previous step [**Map a file share**](../4-create-new-shares)
-
-WARNING!! This workshop environment will exceed your free-usage tier. You will incur charges as a result of building this environment and completing the steps below.
-
-### Step 5.1: Backup the file system
+### Step 6.1: Restore a backup
 
 - Click on the link below to log in to the Amazon FSx Management Console in the same AWS region as your file system. 
 
@@ -42,15 +27,58 @@ WARNING!! This workshop environment will exceed your free-usage tier. You will i
 | us-west-2 | [US West (Oregon)](https://console.aws.amazon.com/fsx/home?region=us-west-2#file-systems) |
 | eu-west-1 | [EU East (Ireland)](https://console.aws.amazon.com/fsx/home?region=eu-west-1#file-systems) |
 
-- Select the FSx for Windows file system you created earlier in the workshop
-- Click **Actions > Create backup**
-- The backup is an incremental file-system consistent backup. This is an online operation so you can continue with the next section of the workshop.
+- Click the **File system name** link of the FSx for Windows file system you created earlier in the workshop
+- Click the **Backups** tab
+- Click the checkbox next to the backup you created earlier. It should have the type **User-Initiated**
+- Click **Restore backup**
+- Complete the **Create file system from backup...** wizard with the following settings
+
+| File system details | Value |
+| :--- | :--- 
+| File system name | type in a name of your file system - this will **not** be used to access the file share or file system |
+| Storage capacity | Immutable when restoring a backup |
+| Throughput capacity | 64 MB/s |
+
+
+| Network & security | Value |
+| :--- | :--- 
+| Virtual private cloud (VPC) | Accept the default |
+| Availability zone | Select a different Availability Zone from the default |
+| Subnet | Accept the default |
+| VPC Security Groups | Accept the default |
+
+
+| Windows authentication | Value |
+| :--- | :--- 
+| Microsoft Active Directory ID | Accept the default |
+
+
+| Encryption | Value |
+| :--- | :--- 
+| Encryption key | Accept the default |
+
+
+| Maintenance preferences | Value |
+| :--- | :--- 
+| Daily automatic backup window | No preference |
+| Automatic backup retention period | 0 days (this disables automatic backups) |
+| Weekly maintenance window | No preference |
+
+
+- Select **Review summary**
+
+- Review the file system attributes & estimated monthly costs
+
+- Select **Create file system**
+
+- After about 15 minutes the new file system will be created from the backup you selected.
+
 
 ---
 ## Next section
 ### Click on the link below to go to the next section
 
-| [**Mount file system**](../6-mount-file-system) |
+| [**Setup DFS**](../07-setup-dfs) |
 | :---
 ---
 
@@ -59,5 +87,6 @@ For feedback, suggestions, or corrections, please email me at [darrylo@amazon.co
 ## License Summary
 
 This sample code is made available under a modified MIT license. See the LICENSE file.
+
 
 
