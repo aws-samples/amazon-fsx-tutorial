@@ -65,7 +65,9 @@ Resources:
     Properties:
       GroupDescription: Security group for Amazon FSx file system
       SecurityGroupIngress:
-        - IpProtocol: -1
+        - IpProtocol: tcp
+          FromPort: 445
+          ToPort: 445
           SourceSecurityGroupId: !Ref ExternalAccessSecurityGroup
       VpcId:
         !Ref VpcId
