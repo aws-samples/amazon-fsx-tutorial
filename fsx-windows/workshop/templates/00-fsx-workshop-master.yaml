@@ -249,8 +249,22 @@ Resources:
         WeeklyMaintenanceStartTime:
           !Ref WeeklyMaintenanceStartTime
       TemplateURL: https://s3.amazonaws.com/amazon-fsx/workshop/windows/04-fsx-windows.yaml
+  Lin:
+    DependsOn: [ Fsx ]
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        InstanceType:
+          !Ref LinInstanceType
+        KeyName:
+          !Ref KeyName
+        SecurityGroups:
+          !GetAtt [ Sg, Outputs.ExternalAccessSecurityGroup ]
+        Subnets:
+          !GetAtt [ Vpc, Outputs.PublicSubnet0 ]
+      TemplateURL: https://s3.amazonaws.com/amazon-fsx/workshop/windows/05-linux-instance.yaml
   Nss:
-    DependsOn: [ Mad ]
+    DependsOn: [ Lin ]
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
@@ -264,9 +278,9 @@ Resources:
           !GetAtt [ Sg, Outputs.ExternalAccessSecurityGroup ]
         Subnet:
           !Join [ ',', [ !GetAtt [ Vpc, Outputs.PublicSubnet0 ], !GetAtt [ Vpc, Outputs.PublicSubnet1 ] ] ]
-      TemplateURL: https://s3.amazonaws.com/amazon-fsx/workshop/windows/04-namespace-servers.yaml
+      TemplateURL: https://s3.amazonaws.com/amazon-fsx/workshop/windows/06-namespace-servers.yaml
   Win:
-    DependsOn: [ Mad ]
+    DependsOn: [ Nss ]
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
@@ -280,21 +294,7 @@ Resources:
           !GetAtt [ Sg, Outputs.ExternalAccessSecurityGroup ]
         Subnets:
           !GetAtt [ Vpc, Outputs.PublicSubnet0 ]
-      TemplateURL: https://s3.amazonaws.com/amazon-fsx/workshop/windows/04-windows-instance.yaml
-  Lin:
-    DependsOn: [ Mad ]
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      Parameters:
-        InstanceType:
-          !Ref LinInstanceType
-        KeyName:
-          !Ref KeyName
-        SecurityGroups:
-          !GetAtt [ Sg, Outputs.ExternalAccessSecurityGroup ]
-        Subnets:
-          !GetAtt [ Vpc, Outputs.PublicSubnet0 ]
-      TemplateURL: https://s3.amazonaws.com/amazon-fsx/workshop/windows/04-linux-instance.yaml
+      TemplateURL: https://s3.amazonaws.com/amazon-fsx/workshop/windows/07-windows-instance.yaml
 
 
 
