@@ -54,13 +54,13 @@ Accept the default stack name and Click *Next*. Enter values for all parameters.
 |===
 
 | *File system ID*
-a| Enter the file system id of the FSx for Windows File Server (e.g. fs-0123456789abcdef0)
+a| Enter the file system id of the FSx for Windows File Server (e.g. fs-0123456789abcdef0).
 
 | *Threshold*
 a| Enter the low free storage capacity threshold value in bytes. If the current free storage capacity of the file system drops below this value, CloudWatch alarms will send an email notification to the email address below.
 
 | *Email address*
-a| Enter the email address that will receive notifications for low free storage capacity CloudWatch alarms. Important! An AWS Notification Subscription Confirmation email will be sent to this email address when the CloudFormation stack is created. You must take the action described in that email to confirm the SNS topic subscription before the email address can start receiving alarm notifications.
+a| Enter the email address that will receive notifications for low free storage capacity CloudWatch alarms. *Important!* An AWS Notification Subscription Confirmation email will be sent to this email address when the CloudFormation stack is created. You must take action described in the email to confirm the SNS topic subscription before the email address can start receiving alarm notifications.
 
 |===
 
