@@ -1,0 +1,63 @@
+
+:toc:
+:icons:
+:linkattrs:
+:imagesdir: ../../resources/images
+
+image:cw-monitoring-tutorial.png[align="left",width=420]
+
+This tutorial is designed for architects and engineers who would like to learn more about monitoring FSx for Windows File Servers using CloudWatch.
+
+== Tutorial
+
+Click on the "Deploy to AWS" button and follow the CloudFormation prompts to begin.
+
+[NOTE]
+Amazon FSx is currently available in 6 regions. Please choose the same region where you have your FSx for Windows File Server.
+
+=== CloudFormation template
+
+|===
+
+|Region | Launch template with a new VPC
+| *N. Virginia* (us-east-1)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=fsx-monitoring-tutorial&templateURL=https://s3.amazonaws.com/amazon-fsx/tutorial/windows/templates/fsx-cw-dashboard.yaml]
+
+| *Ohio* (us-east-2)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=fsx-monitoring-tutorial&templateURL=https://s3.amazonaws.com/amazon-fsx/tutorial/windows/templates/fsx-cw-dashboard.yaml]
+
+| *Oregon* (us-west-2)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=fsx-monitoring-tutorial&templateURL=https://s3.amazonaws.com/amazon-fsx/tutorial/windows/templates/fsx-cw-dashboard.yaml]
+
+| *Ireland* (eu-west-1)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/new?stackName=fsx-monitoring-tutorial&templateURL=https://s3.amazonaws.com/amazon-fsx/tutorial/windows/templates/fsx-cw-dashboard.yaml]
+
+| *Sydney* (ap-southeast-2)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=fsx-monitoring-tutorial&templateURL=https://s3.amazonaws.com/amazon-fsx/tutorial/windows/templates/fsx-cw-dashboard.yaml]
+
+| *Tokyo* (ap-northeast-1)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=ap-northeast-1#/stacks/new?stackName=fsx-monitoring-tutorial&templateURL=https://s3.amazonaws.com/amazon-fsx/tutorial/windows/templates/fsx-cw-dashboard.yaml]
+
+
+|===
+
+=== Parameters
+
+Accept the default stack name and Click *Next*. Enter the FSx file system id (e.g. fs-0123456789abcdef0) , the free storage capacity threshold in bytes, and an email address that will receive CloudWatch alarm notifications.
+
+Important! An AWS Notification Subscription Confirmation email will be sent to the email address. You must confirm the SNS topic subscription before the email address can start receiving alarm notifications.
+
+
+=== Example dashboard screenshot
+
+Below is an example of the CloudWatch dashboard created from the template.
+
+image::fsx-cw-dashboard.png[align="left",width=840]
+
+
+
+NOTE: You will incur charges as you go through these tutorials as it will exceed the link:http://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier-limits.html[limits of AWS free tier].
+
+== Participation
+
+You can share this workshop via https://amzn.to/fsx-windows-workshop. We encourage participation; if you find anything, please submit an issue. However, if you want to help raise the bar, **submit a PR**!

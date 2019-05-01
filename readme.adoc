@@ -1,0 +1,22 @@
+= Cloud File Storage the AWSome Way!
+:icons:
+:linkattrs:
+:imagesdir: resources/images
+
+image:fsx_aws_logos.png[alt="fsx for windows and aws logos", align="left",width=420]
+
+This is a set of tutorials designed for architects and engineers who would like to learn more about Amazon Web Services (AWS) full-managed third party file system service - link:https://aws.amazon.com/fsx/[Amazon FSx].
+
+Click the button below to access Amazon FSx tutorials.
+
+
+
+image::fsx_windows_tutorial_logos.png[link=windows/, align="left",width=420]
+
+
+
+NOTE: You will incur charges as you go through these tutorials as it will exceed the link:http://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier-limits.html[limits of AWS free tier].
+
+=== Participation
+
+You can share this workshop via https://amzn.to/fsx-windows-workshop. We encourage participation; if you find anything, please submit an issue. However, if you want to help raise the bar, **submit a PR**!
