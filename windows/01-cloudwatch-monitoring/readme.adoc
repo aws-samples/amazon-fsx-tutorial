@@ -8,14 +8,14 @@ image:cw-monitoring-tutorial.png[align="left",width=420]
 
 This tutorial is designed for architects and engineers who would like to learn more about monitoring FSx for Windows File Servers using CloudWatch.
 
-== Tutorial
+= Step-by-step Guide
 
-Click on the "Deploy to AWS" button and follow the CloudFormation prompts to begin.
+== CloudFormation
+
+* Click on the *"Deploy to AWS"* button and follow the CloudFormation prompts to begin.
 
 [NOTE]
 Amazon FSx is currently available in 6 regions. Please choose the same region where you have your FSx for Windows File Server.
-
-=== CloudFormation
 
 |===
 
@@ -41,14 +41,12 @@ a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/h
 
 |===
 
-=== Step-by-step Guide
+=== Specify stack details
 
-==== Specify stack details
-
-Accept the default stack name and Click *Next*. Enter values for all parameters.
+* Accept the default stack name and *_click_* *Next*. *_Enter_* values for all parameters.
 
 
-==== Parameters
+=== Parameters
 
 [cols="3,10"]
 |===
@@ -60,13 +58,13 @@ a| Enter the file system id of the FSx for Windows File Server (e.g. fs-01234567
 a| Enter the low free storage capacity threshold value in bytes. If the current free storage capacity of the file system drops below this value, CloudWatch alarms will send an email notification to the email address below.
 
 | *Email address*
-a| Enter the email address that will receive notifications for low free storage capacity CloudWatch alarms. *Important!* An AWS Notification Subscription Confirmation email will be sent to this email address when the CloudFormation stack is created. You must take action described in the email to confirm the SNS topic subscription before the email address can start receiving alarm notifications.
+a| Enter the email address that will receive notifications for low free storage capacity CloudWatch alarms. Important! An AWS Notification Subscription Confirmation email will be sent to this email address when the CloudFormation stack is created. You must take the action described in that email to confirm the SNS topic subscription before the email address can start receiving alarm notifications.
 
 |===
 
-After you have entered values for all parameters, click *Next*.
-Accept the default values of the *Configure stack options* and *Advanced options* sections and click *Next*.
-Review the CloudFormation stack settings and click *Create stack*.
+* After you have entered values for all parameters, *_click_* *Next*.
+* *_Accept_* the default values of the *Configure stack options* and *Advanced options* sections and *_click_* *Next*.
+* *_Review_* the CloudFormation stack settings and *_click_* *Create stack*.
 
 
 === Example dashboard screenshot
