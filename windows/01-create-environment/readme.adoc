@@ -7,17 +7,15 @@
 
 == Summary
 
-A new AWS environment will be pre-built and available to you for use during this tutorial. See *environment diagram* below. It will take approximately 40 minutes for the tutorial environment to be created.
+Build a new AWS environment for use during this tutorial. See *environment diagram* below. It will take approximately 40 minutes for the tutorial environment to be created.
 
 == Environment Diagram
 
-image::fsx-windows-architecture.png[align="left", width=600]
+image::fsx-windows-tutorial-architecture.png[align="left", width=600]
 
 == Step-by-step Guide
 
-. Using the instructions provided, enter the URL to access the provided AWS account and use the credentials given to you to access the AWS Management Console.
-
-== Step-by-step Guide
+. Using the instructions below, create the tutorial environment using AWS CloudFormation. It will take approximately 40 minutes for the CloudFormation stack to be fully deployed.
 
 === CloudFormation
 
