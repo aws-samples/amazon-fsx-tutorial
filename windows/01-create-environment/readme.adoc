@@ -1,0 +1,25 @@
+= Create Environment
+:toc:
+:icons:
+:linkattrs:
+:imagesdir: ../resources/images
+
+
+== Summary
+
+A new AWS environment will be pre-built and available to you for use during this tutorial. See *environment diagram* below.
+
+== Environment Diagram
+
+image::fsx-windows-architecture.png[align="left", width=600]
+
+== Step-by-step Guide
+
+. Using the instructions provided, enter the URL to access the provided AWS account and use the credentials given to you to access the AWS Management Console.
+
+== Next section
+
+Click the button below to go to the next section.
+
+image::02-create-maz-file-system.png[link=../02-create-maz-file-system/, align="right",width=420]
+

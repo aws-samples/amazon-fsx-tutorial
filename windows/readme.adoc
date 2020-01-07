@@ -5,17 +5,22 @@
 
 image:fsx-windows-aws-logos.png[alt="fsx for windows and aws logos", align="left",width=420]
 
-This is a set of tutorials designed for architects and engineers who would like to learn more about Amazon Web Services (AWS) native Windows file storage.
+This tutorial is for *Amazon FSx for Windows File Server*.
 
-Click the buttons below to access the Amazon FSx for Windows File Server tutorials.
+This is a tutorial designed for architects and engineers who would like to learn more about Amazon Web Services (AWS) native Windows file storage.
+
+=== Duration
+
+NOTE: It will take approximately 90 minutes to complete and you will run it using your own AWS account.
+
+=== Pricing
+
+NOTE: You will incur charges for this workshop.
 
 
+Click the button below to start the *Amazon FSx for Windows File Server* tutorial.
 
-image::cw-monitoring-tutorial.png[link=01-cloudwatch-monitoring/, align="left",width=420]
-
-
-
-NOTE: You will incur charges as you go through these tutorials as it will exceed the link:http://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier-limits.html[limits of AWS free tier].
+image::01-create-environment.png[link=01-create-environment/, align="left",width=420]
 
 === Participation
 
