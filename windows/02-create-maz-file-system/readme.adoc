@@ -28,9 +28,7 @@ image::create-maz-file-system.gif[align="left", width=600]
 
 . Open the link:https://console.aws.amazon.com/fsx/[Amazon FSx] console.
 +
-TIP: *_Context-click (right-click)_* the link above and open the link in a new tab or window to make it easy to navigate between this github workshop and Amazon FSx console.
-+
-NOTE: The pre-built workshop environment was built in the *Ohio (us-east-2) AWS Region*. Make sure you are in the *Ohio (us-east-2) AWS Region*.
+TIP: *_Context-click (right-click)_* the link above and open the link in a new tab or window to make it easy to navigate between this github tutorial and the Amazon FSx console.
 +
 . *_Select_* the *Create file system* button.
 . *_Select_* the *Amazon FSx for Windows File Server* as the file system type.
@@ -40,7 +38,7 @@ NOTE: The pre-built workshop environment was built in the *Ohio (us-east-2) AWS 
 [cols="3,10"]
 |===
 | *File system name*
-a| *_Enter_* *STG326 - MAZ*
+a| *_Enter_* *MAZ*
 | *Deployment type*
 a| *_Select_* - *Multi-AZ*
 | *Storage capacity*
