@@ -1,7 +1,7 @@
 = Windows File Storage the AWSome Way!
 :icons:
 :linkattrs:
-:imagesdir: ../resources/images
+:imagesdir: resources/images
 
 image:fsx-windows-aws-logos.png[alt="fsx for windows and aws logos", align="left",width=420]
 
