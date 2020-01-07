@@ -1,7 +1,7 @@
 ---
 AWSTemplateFormatVersion: 2010-09-09
 
-Description: Creates the Amazon FSx for Windows File Server workshop environment.
+Description: Creates the Amazon FSx for Windows File Server tutorial environment.
 
 Metadata:
   Authors:
@@ -9,21 +9,197 @@ Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
     - Label:
-        default: Workshop Environment
+        default: Tutorial Environment
       Parameters:
         - VpcCidr
         - AvailabilityZones
+        - InstanceType
     ParameterLabels:
       AvailabilityZones:
         default: Availability Zones
+      InstanceType:
+        default: Instance Type
       VpcCidr:
         default: VPC CIDR
 
 Parameters:
   AvailabilityZones:
-    Default: "us-east-2a,us-east-2b"
     Description: Select two (2) Availability Zones (AZ). One public subnet and one private subnet will be created in each AZ.
     Type: List<AWS::EC2::AvailabilityZone::Name>
+  InstanceType:
+    AllowedValues:
+    - a1.2xlarge
+    - a1.xlarge
+    - a1.large
+    - a1.medium
+    - a1.4xlarge
+    - c1.xlarge
+    - c1.medium
+    - c3.2xlarge
+    - c3.8xlarge
+    - c3.xlarge
+    - c3.large
+    - c3.4xlarge
+    - c4.2xlarge
+    - c4.8xlarge
+    - c4.xlarge
+    - c4.large
+    - c4.4xlarge
+    - c5.18xlarge
+    - c5d.18xlarge
+    - c5.9xlarge
+    - c5d.9xlarge
+    - c5.2xlarge
+    - c5d.2xlarge
+    - c5.xlarge
+    - c5d.xlarge
+    - c5.large
+    - c5d.large
+    - c5.4xlarge
+    - c5d.4xlarge
+    - c5n.18xlarge
+    - c5n.9xlarge
+    - c5n.2xlarge
+    - c5n.xlarge
+    - c5n.large
+    - c5n.4xlarge
+    - cc2.8xlarge
+    - d2.2xlarge
+    - d2.8xlarge
+    - d2.xlarge
+    - d2.4xlarge
+    - f1.16xlarge
+    - f1.2xlarge
+    - f1.4xlarge
+    - g2.2xlarge
+    - g2.8xlarge
+    - g3.16xlarge
+    - g3.8xlarge
+    - g3.4xlarge
+    - g3s.xlarge
+    - p2.16xlarge
+    - p2.8xlarge
+    - p2.xlarge
+    - h1.16xlarge
+    - h1.2xlarge
+    - h1.8xlarge
+    - h1.4xlarge
+    - cr1.8xlarge
+    - hs1.8xlarge
+    - i2.2xlarge
+    - i2.8xlarge
+    - i2.xlarge
+    - i2.4xlarge
+    - i3.16xlarge
+    - i3.2xlarge
+    - i3.8xlarge
+    - i3.xlarge
+    - i3.large
+    - i3.metal
+    - i3.4xlarge
+    - m1.xlarge
+    - m1.large
+    - m1.medium
+    - m1.small
+    - m2.2xlarge
+    - m2.xlarge
+    - m2.4xlarge
+    - m3.2xlarge
+    - m3.xlarge
+    - m3.large
+    - m3.medium
+    - m4.16xlarge
+    - m4.10xlarge
+    - m4.2xlarge
+    - m4.xlarge
+    - m4.large
+    - m4.4xlarge
+    - m5.12xlarge
+    - m5d.12xlarge
+    - m5.24xlarge
+    - m5d.24xlarge
+    - m5.2xlarge
+    - m5d.2xlarge
+    - m5.xlarge
+    - m5d.xlarge
+    - m5.large
+    - m5d.large
+    - m5.4xlarge
+    - m5d.4xlarge
+    - m5a.12xlarge
+    - m5a.24xlarge
+    - m5a.2xlarge
+    - m5a.xlarge
+    - m5a.large
+    - m5a.4xlarge
+    - p3.16xlarge
+    - p3.2xlarge
+    - p3.8xlarge
+    - p3dn.24xlarge
+    - r3.2xlarge
+    - r3.8xlarge
+    - r3.xlarge
+    - r3.large
+    - r3.4xlarge
+    - r4.16xlarge
+    - r4.2xlarge
+    - r4.8xlarge
+    - r4.xlarge
+    - r4.large
+    - r4.4xlarge
+    - r5.12xlarge
+    - r5.24xlarge
+    - r5.2xlarge
+    - r5.xlarge
+    - r5.large
+    - r5.4xlarge
+    - r5a.12xlarge
+    - r5a.24xlarge
+    - r5a.2xlarge
+    - r5a.xlarge
+    - r5a.large
+    - r5a.4xlarge
+    - r5d.12xlarge
+    - r5d.24xlarge
+    - r5d.2xlarge
+    - r5d.xlarge
+    - r5d.large
+    - r5d.4xlarge
+    - t1.micro
+    - t2.2xlarge
+    - t2.xlarge
+    - t2.large
+    - t2.medium
+    - t2.micro
+    - t2.nano
+    - t2.small
+    - t3.2xlarge
+    - t3.xlarge
+    - t3.large
+    - t3.medium
+    - t3.micro
+    - t3.nano
+    - t3.small
+    - u-12tb1.metal
+    - u-6tb1.metal
+    - u-9tb1.metal
+    - x1.16xlarge
+    - x1.32xlarge
+    - x1e.16xlarge
+    - x1e.32xlarge
+    - x1e.2xlarge
+    - x1e.8xlarge
+    - x1e.xlarge
+    - x1e.4xlarge
+    - z1d.12xlarge
+    - z1d.3xlarge
+    - z1d.6xlarge
+    - z1d.2xlarge
+    - z1d.xlarge
+    - z1d.large
+    Default: m5.xlarge
+    Description: Instance type
+    Type: String
   VpcCidr:
     AllowedValues: 
     - 10.0.0.0/16
@@ -245,7 +421,7 @@ Resources:
         - !Ref FileSystemSecurityGroup
       Tags:
         - Key: Name
-          Value: STG326 - SAZ
+          Value: SAZ
       WindowsConfiguration:
         ActiveDirectoryId: !Ref Directory
         ThroughputCapacity: 64
@@ -257,7 +433,7 @@ Resources:
       IamInstanceProfile: !Ref InstanceProfile
       ImageId: !GetAtt AmiInfo.Id
       Monitoring: true
-      InstanceType: m5a.xlarge
+      InstanceType: m5.xlarge
       SecurityGroupIds: 
         - !Ref WindowsSecurityGroup
       SubnetId: !Ref PublicSubnet0
@@ -413,7 +589,7 @@ Resources:
         S3Bucket: !Sub solution-references-${AWS::Region}
         S3Key: fsx/dfs/ActiveDirectoryCustomResource.zip
       Handler: ad.handler
-      Runtime: nodejs8.10
+      Runtime: nodejs12.x
       Timeout: 30
       Role: !GetAtt LambdaExecutionRole.Arn
   ActiveDirectory:
@@ -431,7 +607,7 @@ Resources:
         S3Bucket: !Sub solution-references-${AWS::Region}
         S3Key: fsx/dfs/amilookup-win.zip
       Handler: amilookup-win.handler
-      Runtime: nodejs8.10
+      Runtime: nodejs12.x
       Timeout: 30
       Role: !GetAtt LambdaExecutionRole.Arn
   AmiInfo:
