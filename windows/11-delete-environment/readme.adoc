@@ -1,0 +1,32 @@
+= Delete environment
+:toc:
+:icons:
+:linkattrs:
+:imagesdir: ../resources/images
+
+
+== Summary
+
+This section will delete the environment.
+
+
+== Duration
+
+NOTE: It will take approximately 20 minutes to complete this section.
+
+
+== Step-by-step Guide
+
+IMPORTANT: Read through all steps below and watch the quick video before continuing.
+image::delete-environment.gif[align="left", width=600]
+
+
+=== Delete all user-initiated backups (if any)
+
+=== Delete the multi-AZ file system
+
+=== Delete the AWS CloudFormation stack
+
+
+
+
