@@ -1,0 +1,176 @@
+= Enable user storage quotas
+:toc:
+:icons:
+:linkattrs:
+:imagesdir: ../resources/images
+
+
+== Summary
+
+This section will enable user storage quotas.
+
+
+== Duration
+
+NOTE: It will take approximately 10 minutes to complete this section.
+
+
+== Step-by-step Guide
+
+=== Enable user storage quotas
+
+IMPORTANT: Read through all steps below and watch the quick video before continuing.
+
+image::enable-quotas.gif[align="left", width=600]
+
+
+. *_Copy_* the script below into your favorite text editor.
++
+[source,bash]
+----
+$WindowsRemotePowerShellEndpoint = "windows_remote_powershell_endpoint" # e.g. "fs-0123456789abcdef.example.com"
+enter-pssession -ComputerName ${WindowsRemotePowerShellEndpoint} -ConfigurationName FsxRemoteAdmin
+
+----
++
+
+. From the link:https://console.aws.amazon.com/fsx/[Amazon FSx] console, *_click_* the link to the *STG326 - SAZ* file system and *_select_* the *Network & security* tab. *_Copy_* the *Windows Remote PowerShell Endpoint* of the file system to the clipboard (e.g. fs-0123456789abcdef.example.com).
+
+. Return to your favorite text editor and replace *"windows_remote_powershell_endpoint"* with the *Windows Remote PowerShell Endpoint* of *STG326 - SAZ*. *_Copy_* the updated script.
+
+. Go to the remote desktop session for your *Windows Instance 0*.
+
+. *_Click_* *Start* >> *Windows PowerShell*.
+
+. *_Run_* the updated script in the *Windows PowerShell* window.
+
++
+NOTE: Complete the next few steps using the remote PowerShell session to the FSx file server.
++
+
+. Review the PowerShell function commands for managing user quotas available using the *Amazon FSx CLI for remote management on PowerShell*.
+* *_Run_* the command in the *Remote Windows PowerShell Session*.
+
++
+[source,bash]
+----
+Get-Command *-FSxUserQuota*
+----
++
+
+. What commands are available?
+
+. Enable user storage quotas for the entire FSx file system and set the default track limit to 200 GB and the default track warning limit to 100 GB.
+* *_Run_* the command in the *Remote Windows PowerShell Session*.
+
++
+[source,bash]
+----
+Enable-FSxUserQuotas -Track -DefaultLimit 200000000000 -DefaultWarningLimit 100000000000
+----
++
+
+. Open a new local Windows PowerShell session (NOT a Remote Windows PowerShell Session).
+* *_Click_* *Start* >> *Windows PowerShell*.
+
+. Create a 201 GB sparse file.
+* *_Run_* the command in the new local *Windows PowerShell Session*.
+
++
+[source,bash]
+----
+$random = $(Get-Random)
+fsutil file createnew Z:\${env:computername}-$random.dat 201000000000
+----
++
+
+. Determin which users are exceeding their user storage quota limit.
+* *_Run_* the command in the *Remote Windows PowerShell Session*.
+
++
+[source,bash]
+----
+Get-FSxUserQuotaEntries
+----
++
+
+. Set user storage quotas for the admin@example.com.
+* *_Run_* the command in the *Remote Windows PowerShell Session*.
+
++
+[source,bash]
+----
+Set-FSxUserQuotas -Domain example.com -Name admin -Limit 250000000000 -WarningLimit 100000000000
+
+----
++
+
+. Change the user storage quotas setting from track to enforce.
+* *_Run_* the command in the *Remote Windows PowerShell Session*.
+
++
+[source,bash]
+----
+Enable-FSxUserQuotas -Enforce -DefaultLimit 200000000000 -DefaultWarningLimit 100000000000
+
+----
++
+
+. Create a 1 KB sparse file.
+* *_Run_* the command in the local *Windows PowerShell Session*.
+
++
+[source,bash]
+----
+$random = $(Get-Random)
+fsutil file createnew Z:\${env:computername}-$random.dat 1000
+----
++
+
+
+* What error do you get?
+
+* How much total disk space is being used?
+
+* Why are you getting this error?
+
+
+=== Disable user storage quotas
+
+. Disable user storage quotas for the entire FSx file system.
+* *_Run_* the command in the *Remote Windows PowerShell Session*.
+
++
+[source,bash]
+----
+Disable-FSxUserQuotas
+
+----
++
+
+. Create a 1 KB sparse file.
+* *_Run_* the command in the local *Windows PowerShell Session*.
+
++
+[source,bash]
+----
+$random = $(Get-Random)
+fsutil file createnew Z:\${env:computername}-$random.dat 1000
+----
++
+
+
+. End the remote PowerShell session. *_Run_* *Exit-PSSession*.
+
+. Close the PowerShell window. *_Run_* *exit*.
+
+
+== Next section
+
+Click the button below to go to the next section.
+
+image::10-enable-ca-share.png[link=../10-enable-ca-share/, align="left",width=420]
+
+
+
+

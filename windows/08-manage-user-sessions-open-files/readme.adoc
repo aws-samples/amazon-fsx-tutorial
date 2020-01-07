@@ -174,7 +174,7 @@ Close-FSxSmbOpenFile
 
 Click the button below to go to the next section.
 
-image::09-enable-ca-share.png[link=../09-enable-ca-share/, align="left",width=420]
+image::09-enable-quotas.png[link=../09-enable-quotas/, align="left",width=420]
 
 
 
