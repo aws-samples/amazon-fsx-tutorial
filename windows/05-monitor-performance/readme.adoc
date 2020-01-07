@@ -25,12 +25,10 @@ image::examine-cloudwatch-dashboard.gif[align="left", width=600]
 
 . Open the link:https://console.aws.amazon.com/cloudwatch/[Amazon CloudWatch] console.
 +
-TIP: *_Context-click (right-click)_* the link above and open the link in a new tab or window to make it easy to navigate between this github workshop and AWS console.
-+
-NOTE: The pre-built workshop environment was built in the *Ohio (us-east-2) AWS Region*. Make sure you are in the *Ohio (us-east-2) AWS Region*.
+TIP: *_Context-click (right-click)_* the link above and open the link in a new tab or window to make it easy to navigate between this github tutorial and AWS console.
 +
 . *_Select_* *Dashboards* from the left navigation pane.
-. *_Select_* the link of the dashboard created as a part of the workshop environment.
+. *_Select_* the link of the dashboard created as a part of the tutorial environment.
 +
 TIP: The name of the dashboard should be the region name (e.g. us-east-2), dash (-), file system id of *STG326 - SAZ* (e.g. us-east-2-fs-0123456789abcdef).
 . *_Scroll_* through the dashboard and review all the widgets and their settings.

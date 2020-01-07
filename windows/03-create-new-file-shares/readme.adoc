@@ -28,11 +28,10 @@ image::connect-windows-instance.gif[align="left", width=600]
 
 . Open the link:https://console.aws.amazon.com/ec2/[Amazon EC2] console.
 +
-TIP: *_Context-click (right-click)_* the link above and open the link in a new tab or window to make it easy to navigate between this github workshop and AWS console.
+TIP: *_Context-click (right-click)_* the link above and open the link in a new tab or window to make it easy to navigate between this github tutorial and AWS console.
+
 +
-NOTE: The pre-built workshop environment was built in the *Ohio (us-east-2) AWS Region*. Make sure you are in the *Ohio (us-east-2) AWS Region*.
-+
-. Make sure you are in the same *AWS Region* as the workshop environment.
+. Make sure you are in the same *AWS Region* as the tutorial environment.
 
 . *_Select_* *Running Instances*.
 

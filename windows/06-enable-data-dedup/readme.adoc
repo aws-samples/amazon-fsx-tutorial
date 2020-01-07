@@ -273,7 +273,7 @@ Get-FSxDedupJob
 
 . Continue to re-run the Get-FSxDedupJob command every few minutes to check on the status of the job. This may take 5-10 minutes depending on the amount of data you creating during the *test performance* section.
 
-. Continue with the workshop while the data deduplication job runs in the background.
+. Continue with the tutorial while the data deduplication job runs in the background.
 
 . If the Get-FSxDedupJob command returns an error, then there are no more active jobs and the job has completed.
 

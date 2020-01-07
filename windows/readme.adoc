@@ -15,7 +15,7 @@ NOTE: It will take approximately 90 minutes to complete and you will run it usin
 
 === Pricing
 
-NOTE: You will incur charges for this workshop.
+NOTE: You will incur charges for this tutorial.
 
 
 Click the button below to start the *Amazon FSx for Windows File Server* tutorial.
