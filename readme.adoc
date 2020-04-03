@@ -11,7 +11,7 @@ Click the button below to access Amazon FSx tutorials.
 
 
 
-image::fsx_windows_tutorial_logos.png[link=windows/, align="left",width=420]
+image::fsx_windows_tutorial_logos.png[link=windows-file-server/, align="left",width=420]
 
 
 
