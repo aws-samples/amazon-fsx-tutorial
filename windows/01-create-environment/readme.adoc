@@ -125,7 +125,11 @@ The tutorial environment will be available in approximately 40 minutes.
 
 == Next section
 
-Click the button below to go to the next section.
+Click one of the buttons below to create an SSD or HDD storage type multi-AZ file system.
 
-image::02-create-maz-file-system.png[link=../02-create-maz-file-system/, align="right",width=420]
+image::02a-create-maz-ssd-file-system.png[link=../02a-create-maz-ssd-file-system/, align="right",width=420]
 
+
+
+
+image::02b-create-maz-hdd-file-system.png[link=../02b-create-maz-hdd-file-system/, align="right",width=420]

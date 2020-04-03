@@ -1,4 +1,4 @@
-= Create Multi-AZ file system
+= Create an SSD Multi-AZ file system
 :toc:
 :icons:
 :linkattrs:
@@ -7,7 +7,7 @@
 
 == Summary
 
-This section will create a new file system that spans multiple Availability Zones.
+This section will create a new SSD file system that spans multiple Availability Zones.
 
 
 == Duration
@@ -41,6 +41,8 @@ TIP: *_Context-click (right-click)_* the link above and open the link in a new t
 a| *_Enter_* *MAZ*
 | *Deployment type*
 a| *_Select_* - *Multi-AZ*
+| *Storage type*
+a| *_Select_* - *SSD*
 | *Storage capacity*
 a| *_Enter_* *300*
 | *Throughput capacity - Specify throughput capacity*
