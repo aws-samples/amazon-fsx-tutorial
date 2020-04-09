@@ -7,11 +7,17 @@ image:fsx_aws_logos.png[alt="fsx for windows and aws logos", align="left",width=
 
 This is a set of tutorials designed for architects and engineers who would like to learn more about Amazon Web Services (AWS) full-managed third party file system service - link:https://aws.amazon.com/fsx/[Amazon FSx].
 
-Click the button below to access Amazon FSx tutorials.
+Click the button below to access the Amazon FSx for Lustre or Amazon FSX for Windows File Server tutorial.
 
 
 
-image::fsx_windows_tutorial_logos.png[link=windows-file-server/, align="left",width=420]
+image::fsx-lustre-tutorial-logo.png[link=lustre/, align="left",width=420]
+
+
+
+
+
+image::fsx-windows-file-server-tutorial-logo.png[link=windows-file-server/, align="left",width=420]
 
 
 
