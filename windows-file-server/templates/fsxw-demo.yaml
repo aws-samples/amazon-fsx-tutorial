@@ -392,7 +392,7 @@ Resources:
     Type: AWS::DirectoryService::MicrosoftAD
     Properties: 
       Edition: Standard
-      Name: east.example.com
+      Name: example.com
       Password: !Join ['', ['{{resolve:secretsmanager:', !Ref Password, ':SecretString:password}}' ]]
       VpcSettings: 
         SubnetIds: 
@@ -404,13 +404,13 @@ Resources:
     Type: AWS::SecretsManager::Secret
     Properties:
       GenerateSecretString:
-        SecretStringTemplate: !Sub '{"username": "admin@east.example.com"}'
+        SecretStringTemplate: !Sub '{"username": "admin@example.com"}'
         GenerateStringKey: password
         PasswordLength: 32
   DhcpOptions:
     Type: AWS::EC2::DHCPOptions
     Properties: 
-      DomainName: east.example.com
+      DomainName: example.com
       DomainNameServers: !GetAtt Directory.DnsIpAddresses
   DhcpOptionsAssociation:
     Type: AWS::EC2::VPCDHCPOptionsAssociation
@@ -505,7 +505,7 @@ Resources:
             description: (Required) ID of the AWS Managed Microsoft AD (i.e. d-0123456789)
           directoryName:
             type: String
-            description: (Required) Directory name (i.e. east.example.com)
+            description: (Required) Directory name (i.e. example.com)
           dnsIpAddresses:
             type: StringList
             default: []
