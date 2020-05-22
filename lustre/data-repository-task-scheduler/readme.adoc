@@ -1,0 +1,123 @@
+= Data Repository Task Scheduler
+:toc:
+:icons:
+:linkattrs:
+:imagesdir: ../resources/images
+
+
+== Summary
+
+The Data Repository Task Scheduler is an AWS CloudFormation template that creates AWS resources that schedules and monitors data repository tasks that copies data from an Amazon FSx for Lustre file system to an Amazon S3 data repository (optional configuration).
+
+== Data Repository Task Scheduler
+
+IMPORTANT: Read through all steps below before continuing.
+
+=== Overview
+
+The Data Repository Task Scheduler is an AWS CloudFormation template that creates AWS resources that schedules and monitors data repository tasks that copies data from an Amazon FSx for Lustre file system to an Amazon S3 data repository (optional configuration).
+
+=== Prerequisites
+
+An Amazon FSx for Lustre file system created with an optional Amazon S3 data repository must exist prior to launching the AWS CloudFormation template. See the Using Data Repositories section of the link:https://docs.aws.amazon.com/fsx/latest/LustreGuide/fsx-data-repositories.html[Amazon FSx for Lustre User Guide].
+
+=== Environment and architecture
+
+The Amazon FSx for Lustre Data Repository Task Scheduler is an AWS CloudFormation template that must be launched in the same AWS region as the Amazon FSx for Lustre file system. Please refer to the Region table on the AWS Global Infrastructure site to find the AWS regions where Amazon FSx is available.  The stack created by the CloudFormation template creates an AWS Lambda function that executes the AWS API that creates an Amazon FSx for Lustre data repository task. You use data repository tasks to perform bulk operations between your Amazon FSx file system and its linked data repository, in this case an Amazon S3 bucket or prefix. The only task currently supported is export.
+
+An export task exports data and metadata changes, including POSIX metdata, of files, directories, and symbolic links (symlinks) from your FSx for Lustre file system to its linked data repository. You can limit the scope of the task by specifying up to 32 unique paths (directories or files) to the create-data-repository-task API to export just those paths to S3. The Lambda function, which runs the create-data-repository-task API is executed by an Amazon CloudWatch scheduled event based on a cron expression supplied when launching the CloudFormation stack. The execution of this function is monitored by AWS X-Ray and CloudWatch, with alarms sending email notifications if errors are raised when executing the Lambda function.
+
+The following is a diagram of the architecture.
+
+image::fsx-lustre-data-repository-task.png[align="left", width=600]
+
+=== Resources created
+
+Below is a list of AWS resources created when launching the stack using the CloudFormation template.
+
+•	CloudFormation stack
+•	Lambda function
+•	Lambda permissions
+•	IAM role
+•	CloudWatch scheduled event
+•	CloudWatch alarm
+•	SNS topic
+
+=== Launching the stack
+
+To better understand the solution and the CloudFormation input parameters, please refer to the link:https://solution-references.s3.amazonaws.com/fsx/Amazon+FSx+for+Lustre+Data+Repository+Task+Scheduler+User+Guide.pdf[Amazon FSx for Lustre Data Repository Task Scheduler User Guide].
+
+To launch the CloudFormation stack, click on the link below for the source AWS region and enter the input parameters. You can optionally launch the CloudFormation template from a command line using a parameter file. Links to these sample scripts are below the table.
+
+
+|===
+|Region | Launch template with a new VPC
+| *N. Virginia* (us-east-1)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
+
+| *Ohio* (us-east-2)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
+
+| *N. California* (us-west-1)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=us-west-1#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
+
+| *Oregon* (us-west-2)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
+
+| *Frankfurt* (eu-central-1)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
+
+| *Ireland* (eu-west-1)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
+
+| *London* (eu-west-2)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=eu-west-2#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
+
+| *Stockholm* (eu-north-1)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=eu-north-1#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
+
+| *Singapore* (ap-southeast-1)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-1#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
+
+| *Sydney* (ap-southeast-2)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
+
+| *Tokyo* (ap-northeast-1)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=ap-northeast-1#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
+
+| *Hong Kong* (ap-east-1)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=ap-east-1#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
+|===
+
+
+==== Optional scripts (not needed if launching the stack using the table links above)
+
+The CloudFormation template.
+
+link:https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml[https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
+
+A CloudFormation parameter file.
+
+link:https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler-parameter-file.json[https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler-parameter-file.json]
+
+Shell script to launch the CloudFormation stack using a local parameter file and template from an Amazon S3 bucket.
+
+link:https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.sh[https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.sh]
+
+=== Managing the scheduler
+
+For a detailed description and examples on how to manage, run, edit, etc. task schedules, please refer to the link:https://solution-references.s3.amazonaws.com/fsx/Amazon+FSx+for+Lustre+Data+Repository+Task+Scheduler+User+Guide.pdf[Amazon FSx for Lustre Data Repository Task Scheduler User Guide].
+
+=== Managing the scheduler
+
+Delete the CloudFormation stack to delete all AWS resources created to schedule data repository tasks. Deleting the CloudFormation stack will NOT delete the Amazon FSx for Lustre file system or the Amazon S3 data repository.
+
+== Issues and participation
+
+We encourage participation. Questions or concerns, submit an Issue! If you want to help raise the bar, submit a PR!
+
+
+
+
+
+
