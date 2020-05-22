@@ -45,7 +45,9 @@ Below is a list of AWS resources created when launching the stack using the Clou
 
 === Launching the stack
 
-To better understand the solution and the CloudFormation input parameters, please refer to the link:https://solution-references.s3.amazonaws.com/fsx/Amazon+FSx+for+Lustre+Data+Repository+Task+Scheduler+User+Guide.pdf[Amazon FSx for Lustre Data Repository Task Scheduler User Guide].
+To better understand the solution and the CloudFormation input parameters, please refer to the link:https://solution-references.s3.amazonaws.com/fsx/Amazon+FSx+for+Lustre+Data+Repository+Task+Scheduler+User+Guide.pdf[Amazon FSx for Lustre Data Repository Task Scheduler User Guide] and watch the following short video clip.
+
+image::data-repository-task-scheduler.gif[align="left", width=600]
 
 To launch the CloudFormation stack, click on the link below for the source AWS region and enter the input parameters. You can optionally launch the CloudFormation template from a command line using a parameter file. Links to these sample scripts are below the table.
 
