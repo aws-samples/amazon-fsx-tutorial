@@ -97,8 +97,16 @@ def releaseInfrequentlyAccessedFiles(filesToRelease,freeCapacityHighWaterMark,fr
         totalSpaceReleased=0
         hsmreleaseList=[]
         for filename,attrbs in sorted (filesToRelease.items(), key=lambda x: x[1]['atime'], reverse=True):
-                hsmreleaseList.append(filename)
-                print("Initiated hsm_release for file:",filename, " with access time:", attrbs['atime']," and size:",attrbs['size']," and hsm_state:",attrbs['state'])
+
+                cmd = "sudo lfs hsm_release "+key
+                try:
+                    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, universal_newlines=True)
+                    hsmreleaseList.append(filename)
+                    print("Initiated hsm_release for file:",filename, " with access time:", attrbs['atime']," and size:",attrbs['size']," and hsm_state:",attrbs['state'])
+                except Exception as e:
+                    print("ERROR:", e)
+                    logEvents(e)
+
                 totalSpaceReleased=totalSpaceReleased+attrbs['size']
                 print("Target Space Release is:", targetedSpaceRelease, " current total space released:", totalSpaceReleased," after archiving:", filename)
                 if(totalSpaceReleased > targetedSpaceRelease):
