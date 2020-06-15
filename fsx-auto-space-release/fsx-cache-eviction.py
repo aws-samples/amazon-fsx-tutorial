@@ -133,6 +133,7 @@ def releaseInfrequentlyAccessedFiles(filesToRelease,freeCapacityHighWaterMark,fr
 # Function to check if file exists in FSx by verifying hsm_state
 ##############################################################################
 def gethsmState(fileList):
+        totalFiles=len(fileList)
         ignoreFileList={}
         for key in list(fileList.keys()):
             cmd = "sudo lfs hsm_state "+key
@@ -157,7 +158,9 @@ def gethsmState(fileList):
                 print("Ignoring file as hsm state not valid for release:", key,"is:", output.split(":")[1])
                 ignoreFileList[key]=output.split(":")[1]
                 fileList.pop(key)
-
+        if len(ignoreFileList) == int(totalFiles):
+            message="None of the files identified are available for hsm_release. List of files ignored as the  hsm state of file was  not suitable for space release:\n"+json.dumps(ignoreFileList)
+        else:
             message="List of files ignored as the  hsm state of file was  not suitable for space release:\n"+json.dumps(ignoreFileList)
         logEvents(message)
         return(fileList)
