@@ -158,6 +158,7 @@ def gethsmState(fileList):
                 print("Ignoring file as hsm state not valid for release:", key,"is:", output.split(":")[1])
                 ignoreFileList[key]=output.split(":")[1]
                 fileList.pop(key)
+        print("ignore list length is:", len(ignoreFileList), "total Files is:",totalFiles)
         if len(ignoreFileList) == int(totalFiles):
             message="None of the files identified are available for hsm_release. List of files ignored as the  hsm state of file was  not suitable for space release:\n"+json.dumps(ignoreFileList)
         else:
