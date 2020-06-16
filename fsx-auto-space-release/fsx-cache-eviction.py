@@ -4,6 +4,7 @@ import argparse
 import os
 import json
 import boto3
+import boto.utils
 from botocore.exceptions import ClientError
 import subprocess
 import re
@@ -48,19 +49,17 @@ def logEvents(message):
                         orderBy='LastEventTime',
                         descending=True
                         )
-        except ClientError as e:
-            raise e
 
-        #print("Log group response is:", response)
+            #print("Log group response is:", response)
 
-        logStream=response['logStreams'][0]['logStreamName']
-        #print("Latest log stream is:", logStream)
+            logStream=response['logStreams'][0]['logStreamName']
+            #print("Latest log stream is:", logStream)
 
-        sequenceToken=response['logStreams'][0]['uploadSequenceToken']
+            sequenceToken=response['logStreams'][0]['uploadSequenceToken']
 
-        timestamp = int(round(time.time() * 1000))
+            timestamp = int(round(time.time() * 1000))
 
-        response = logs.put_log_events(
+            response = logs.put_log_events(
                             logGroupName=logGroup,
                             logStreamName=logStream,
                             sequenceToken=sequenceToken,
@@ -69,8 +68,11 @@ def logEvents(message):
                                     'timestamp': timestamp,
                                     'message': time.strftime('%Y-%m-%d %H:%M:%S')+'\t'+message
                                 }
-                            ]
-                    )
+                             ]
+                     )
+        except ClientError as e:
+            terminateInstance()
+            raise e
         return
 
 ##############################################################################
@@ -86,7 +88,22 @@ def snsNotify(message):
             )
             return
         except Exception as e:
+            terminateInstance()
             raise e
+
+
+##############################################################################
+# Function to terminate ec2 instance
+##############################################################################
+def terminateInstance():
+        try:
+            meta = boto.utils.get_instance_metadata()
+            instanceId = meta['instance-id']
+            message="Successfully terminated the instance: "+instanceId
+            logEvents(message)
+        except ClientError as e:
+            message="ERROR: Unable to terminate the instance: "+instanceId
+            logEvents(message+e)
 
 
 ##############################################################################
@@ -98,7 +115,7 @@ def releaseInfrequentlyAccessedFiles(filesToRelease,freeCapacityHighWaterMark,fr
         hsmreleaseList=[]
         for filename,attrbs in sorted (filesToRelease.items(), key=lambda x: x[1]['atime'], reverse=True):
 
-                cmd = "sudo lfs hsm_release "+key
+                cmd = "sudo lfs hsm_release "+filename
                 try:
                     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, universal_newlines=True)
                     hsmreleaseList.append(filename)
@@ -106,26 +123,29 @@ def releaseInfrequentlyAccessedFiles(filesToRelease,freeCapacityHighWaterMark,fr
                 except Exception as e:
                     print("ERROR:", e)
                     logEvents(e)
+                    terminateInstance()
 
                 totalSpaceReleased=totalSpaceReleased+attrbs['size']
                 print("Target Space Release is:", targetedSpaceRelease, " current total space released:", totalSpaceReleased," after archiving:", filename)
                 if(totalSpaceReleased > targetedSpaceRelease):
-                    message="Triggered hsm_release on files identified as suitable for release. Sufficient files were identified to release space up to the High Water Mark. Aborting space release for additional files. hsm release is a non blocking call and will continue to release space in the background, so please wait for few minutes to check your file system capacity\n"+json.dumps(hsmreleaseList)
-                    print(message)
-                    logEvents(message)
+                    message="Triggered hsm_release on files identified as suitable for release. Sufficient files were identified to release space up to the High Water Mark. Aborting space release for additional files. hsm release is a non blocking call and will continue to release space in the background, so please wait for few minutes to check your file system capacity\n"
+                    #print(message)
+                    logEvents(message+json.dumps(hsmreleaseList))
                     snsNotify(message)
                     message="Total Space release triggered by hsm_release:"+str(totalSpaceReleased)
                     logEvents(message)
                     break
         
         if(totalSpaceReleased < targetedSpaceRelease):
-            message="Triggered hsm_release on files identified as suitable for release. However, file system free capacity  will be still below the target  High Water Mark as no additional files suitable for hsm_release. hsm release is a non blocking call that runs in the background, so please wait for few minutes to check your file system capacity\n"+json.dumps(hsmreleaseList)
-            print(message)
-            logEvents(message)
+            message="Triggered hsm_release on files identified as suitable for release. However, file system free capacity  will be still below the target  High Water Mark as no additional files suitable for hsm_release. hsm release is a non blocking call that runs in the background, so please wait for few minutes to check your file system capacity\n"
+            #print(message)
+            logEvents(message+json.dumps(hsmreleaseList))
             snsNotify(message)
 
             message="Total Space release triggered by hsm_release:"+str(totalSpaceReleased)
             logEvents(message)
+
+        terminateInstance(instanceId)
         return
 
 
@@ -143,9 +163,10 @@ def gethsmState(fileList):
             except Exception as e:
                 print("ERROR:", e)
                 logEvents(e)
+                terminateInstance()
             #fileList[key]['state']=output.split(":")[1]
 
-            if "exists archived"  in output.split(":")[1]:
+            if "exists archived"  in output:
                 for hsmState in invalid_hsm_states:
                     if re.search(hsmState,output.split(":")[1]):
                         ignoreFileList[key]=output.split(":")[1]
@@ -158,7 +179,7 @@ def gethsmState(fileList):
                 print("Ignoring file as hsm state not valid for release:", key,"is:", output.split(":")[1])
                 ignoreFileList[key]=output.split(":")[1]
                 fileList.pop(key)
-        print("ignore list length is:", len(ignoreFileList), "total Files is:",totalFiles)
+        #print("ignore list length is:", len(ignoreFileList), "total Files is:",totalFiles)
         if len(ignoreFileList) == int(totalFiles):
             message="None of the files identified are available for hsm_release. List of files ignored as the  hsm state of file was  not suitable for space release:\n"+json.dumps(ignoreFileList)
         else:
@@ -216,16 +237,10 @@ def main():
         global logs
         global snsTopicArn
         global region
+        global instanceId
 
         args = parseArguments()
 
-        ### Confirm all required parameters have been passed.
-       # if args.mountpath == "" or args.lwmfreecapacity == "" or args.hwmfreecapacity == "" or args.minage == "" or  args.loggroup == "" or args.region =="" or args.sns == "":
-       #     message="ERROR: Insufficient number of arguments"
-       #     print(message)
-       #     logEvents(message)
-       #     snsNotify(args.sns,message)
-       # else:
         logGroup=args.loggroup
         freeCapacityLowWaterMark=args.lwmfreecapacity
         freeCapacityHighWaterMark=args.hwmfreecapacity
@@ -233,6 +248,7 @@ def main():
         mountPath=args.mountpath
         snsTopicArn=args.sns
         region=args.region
+        instanceId=args.instance
 
         logs = boto3.client('logs',region_name=region)
 
@@ -244,6 +260,7 @@ def main():
                         )
         except ClientError as e:
             snsNotify(message)
+            terminateInstance(instanceId)
 
         logStream=response['logStreams'][0]['logStreamName']
         sequenceToken=response['logStreams'][0]['uploadSequenceToken']
