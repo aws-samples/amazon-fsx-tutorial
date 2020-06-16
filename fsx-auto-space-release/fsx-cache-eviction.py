@@ -99,12 +99,17 @@ def terminateInstance():
         try:
             meta = boto.utils.get_instance_metadata()
             instanceId = meta['instance-id']
-            message="Successfully terminated the instance: "+instanceId
-            logEvents(message)
+            try:
+                client = boto3.client('ec2',region_name=region)
+                response = client.terminate_instances(InstanceIds=[instanceId])
+                message="Successfully terminated the instance: "+instanceId
+                logEvents(message)
+            except ClientError as e:
+                message="ERROR: Unable to terminate the instance: "+instanceId
+                logEvents(message+e)
         except ClientError as e:
-            message="ERROR: Unable to terminate the instance: "+instanceId
+            message="ERROR: Unable to get instance id from metadata"
             logEvents(message+e)
-
 
 ##############################################################################
 # Function to release space using hsm_release. The function will release list of least recently accessed files.
@@ -145,7 +150,7 @@ def releaseInfrequentlyAccessedFiles(filesToRelease,freeCapacityHighWaterMark,fr
             message="Total Space release triggered by hsm_release:"+str(totalSpaceReleased)
             logEvents(message)
 
-        terminateInstance(instanceId)
+        terminateInstance()
         return
 
 
@@ -237,7 +242,6 @@ def main():
         global logs
         global snsTopicArn
         global region
-        global instanceId
 
         args = parseArguments()
 
@@ -248,7 +252,6 @@ def main():
         mountPath=args.mountpath
         snsTopicArn=args.sns
         region=args.region
-        instanceId=args.instance
 
         logs = boto3.client('logs',region_name=region)
 
@@ -260,7 +263,7 @@ def main():
                         )
         except ClientError as e:
             snsNotify(message)
-            terminateInstance(instanceId)
+            terminateInstance()
 
         logStream=response['logStreams'][0]['logStreamName']
         sequenceToken=response['logStreams'][0]['uploadSequenceToken']
