@@ -1,0 +1,379 @@
+= Configure Amazon FSx for Lustre CSI Driver
+:toc:
+:icons:
+:linkattrs:
+:imagesdir: ../resources/images
+
+
+== Summary
+
+This section will cover configuring provisioning an Amazon Fsx for Lustre persistent file system as persistent volume for your EKS cluster.
+
+
+== Duration
+
+NOTE: It will take approximately 30 minutes to complete this section.
+
+
+== Step-by-step Guide
+
+IMPORTANT: Read through all steps below before continuing.
+
+
+=== Setup IAM roles and permissions for Amazon FSx for Lustre:
+
+1. Create an IAM policy and service account that allows the driver to make calls to the AWS APIs on your behalf. Copy the following text to a file named *fsx-csi-driver.json*:
++
+[source,json,subs="verbatim,quotes"]
+----
+{
+   "Version":"2012-10-17",
+   "Statement":[
+      {
+         "Effect":"Allow",
+         "Action":[
+            "iam:CreateServiceLinkedRole",
+            "iam:AttachRolePolicy",
+            "iam:PutRolePolicy"
+         ],
+         "Resource":"arn:aws:iam::*:role/aws-service-role/s3.data-source.lustre.fsx.amazonaws.com/*"
+      },
+      {
+         "Action":"iam:CreateServiceLinkedRole",
+         "Effect":"Allow",
+         "Resource":"*",
+         "Condition":{
+            "StringLike":{
+               "iam:AWSServiceName":[
+                  "fsx.amazonaws.com"
+               ]
+            }
+         }
+      },
+      {
+         "Effect":"Allow",
+         "Action":[
+            "s3:ListBucket",
+            "fsx:CreateFileSystem",
+            "fsx:DeleteFileSystem",
+            "fsx:DescribeFileSystems"
+         ],
+         "Resource":[
+            "*"
+         ]
+      }
+   ]
+}
+----
++
+Run the command shown below:
++
+[source,bash,subs="verbatim,quotes"]
+----
+aws iam create-policy --policy-name <FSx_Lustre_CSI_Driver_Policy> --policy-document file://fsx-csi-driver.json
+----
++
+===============================
+*Example*: aws iam create-policy --policy-name *Amazon_FSx_Lustre_CSI_Driver* --policy-document file://fsx-csi-driver.json
+===============================
++
+Take note of the policy Amazon Resource Name (ARN) that is returned:
++
+[source,json,subs="verbatim,quotes"]
+----
+{
+    "Policy": {
+        "PolicyName": "Amazon_FSx_Lustre_CSI_Driver",
+        "PolicyId": "ANPAQMDZVU6IHANZ7K457",
+        "Arn": "arn:aws:iam::012345678910:policy/Amazon_FSx_Lustre_CSI_Driver",
+        "Path": "/",
+        "DefaultVersionId": "v1",
+        "AttachmentCount": 0,
+        "PermissionsBoundaryUsageCount": 0,
+        "IsAttachable": true,
+        "CreateDate": "2020-04-07T22:11:32Z",
+        "UpdateDate": "2020-04-07T22:11:32Z"
+    }
+}
+----
++
+
+2.  Create a Kubernetes service account for the driver and attach the policy to the service account. Replace the ARN of the policy with the ARN returned in the previous step, region-code and EKS cluster name highlighted below:
+
++
+[source,bash,subs="verbatim,quotes"]
+----
+eksctl create iamserviceaccount --region ${AWS_REGION} --name fsx-csi-controller-sa --namespace kube-system --cluster ${CLUSTER_NAME}  --attach-policy-arn <policy arn from previous step> --approve
+----
++
+===============================
+*Example*: eksctl create iamserviceaccount --region ${AWS_REGION} --name fsx-csi-controller-sa --namespace kube-system --cluster ${CLUSTER_NAME}  --attach-policy-arn *arn:aws:iam::012345678910:policy/Amazon_FSx_Lustre_CSI_Driver* --approve
+===============================
++
+You should see output as shown below:
++
+[source,bash,subs="verbatim,quotes"]
+----
+[i]  eksctl version 0.16.0
+[i]  using region us-east-1
+[i]  1 iamserviceaccount (kube-system/fsx-csi-controller-sa) was included (based on the include/exclude rules)
+[!]  serviceaccounts that exists in Kubernetes will be excluded, use --override-existing-serviceaccounts to override
+[i]  1 task: { 2 sequential sub-tasks: { create IAM role for serviceaccount "kube-system/fsx-csi-controller-sa", create serviceaccount "kube-system/fsx-csi-controller-sa" } }
+[i]  building iamserviceaccount stack "eksctl-FSxL-Persistent-Cluster-addon-iamserviceaccount-kube-system-fsx-csi-controller-sa"
+[i]  deploying stack "eksctl-FSxL-Persistent-Cluster-addon-iamserviceaccount-kube-system-fsx-csi-controller-sa"
+[i]  created serviceaccount "kube-system/fsx-csi-controller-sa"
+----
++
+
+3.  Next get the role ARN using command below:
++
+[source,bash]
+----
+aws cloudformation describe-stacks --stack-name eksctl-${CLUSTER_NAME}-addon-iamserviceaccount-kube-system-fsx-csi-controller-sa --output text --query Stacks[0].Outputs[0]
+----
++
+You should see output as shown below:
++
+[source,bash]
+----
+Role1 arn:aws:iam::012345678910:role/eksctl-FSxL-Persistent-Cluster-addon-iamserv-Role1-1K03EB0OG1G24
+----
++
+
+4.  Deploy the driver with the following command:
++
+[source,bash,subs="verbatim,quotes"]
+----
+kubectl apply -k "github.com/kubernetes-sigs/aws-fsx-csi-driver/deploy/kubernetes/overlays/stable/?ref=master"
+----
++
+You should see output as shown below:
++
+[source,bash,subs="verbatim,quotes"]
+----
+serviceaccount/fsx-csi-controller-sa created
+clusterrole.rbac.authorization.k8s.io/fsx-csi-external-provisioner-role created
+clusterrolebinding.rbac.authorization.k8s.io/fsx-csi-external-provisioner-binding created
+deployment.apps/fsx-csi-controller created
+daemonset.apps/fsx-csi-node created
+csidriver.storage.k8s.io/fsx.csi.aws.com created
+----
++
+
+5. Patch the driver deployment to add the service account that you created in step 2, replacing the ARN with the ARN that you noted in step 3:
++
+[source,bash,subs="verbatim,quotes"]
+----
+kubectl annotate serviceaccount -n kube-system fsx-csi-controller-sa eks.amazonaws.com/role-arn=<role arn from step 3> --overwrite=true
+----
++
+===============================
+*Example*: 
+kubectl annotate serviceaccount -n kube-system fsx-csi-controller-sa eks.amazonaws.com/role-arn=*arn:aws:iam::012345678910:role/eksctl-FSxL-Persistent-Cluster-addon-iamserv-Role1-1K03EB0OG1G24* --overwrite=true
+===============================
++
+You should see output as shown below:
++
+[source,bash,subs="verbatim,quotes"]
+----
+serviceaccount/fsx-csi-controller-sa annotated
+----
++
+
+
+=== Deploy a storage class, persistent volume claim to configure Amazon FSx for Lustre persistent storage to your EKS cluster:
+
+This procedure uses link:https://github.com/kubernetes-sigs/aws-fsx-csi-driver/tree/master/examples/kubernetes/dynamic_provisioning_s3[dynamic volume provisioning] from the link:https://github.com/kubernetes-sigs/aws-fsx-csi-driver[Amazon Fsx for Lustre Container Storage Interface (CSI) Driver]
+
+1.  Download the storageclass manifest using the following command:
++
+[source,bash,subs="verbatim,quotes"]
+----
+curl -o storageclass.yaml https://raw.githubusercontent.com/kubernetes-sigs/aws-fsx-csi-driver/master/examples/kubernetes/dynamic_provisioning_s3/specs/storageclass.yaml
+----
++
+
+2. Gather the below details required in your storageclass manifest:
+  ..   Get the VPC ID for your cluster. Replace the highlighted cluster name with your EKS cluster name:
++
+[source,bash,subs="verbatim,quotes"]
+----
+VPC_ID=$(aws ec2 describe-vpcs --filters "Name=tag:Name,Values=eksctl-${CLUSTER_NAME}-cluster/VPC" --query "Vpcs[0].VpcId" --output text)
+----
++  
+  ..   Next, get one of your Amazon EKS cluster subnet IDs; your Lustre file system will be provisioned within this subnet:
++
+[source,bash,subs="verbatim,quotes"]
+----
+aws ec2 describe-subnets --filters "Name=tag:Name, Values=eksctl-${CLUSTER_NAME}-cluster/SubnetPrivateUSEAST1*" --query "Subnets[0].SubnetId" --output text
+----
++
+  ..   Next, create your security group for the FSx file system and add an ingress rule that opens up port *988* from the *192.168.0.0/16* CIDR range:
++
+[source,bash,subs="verbatim,quotes"]
+----
+SECURITY_GROUP_ID=$(aws ec2 create-security-group --group-name eks-fsx-security-group --vpc-id ${VPC_ID} --description "FSx for Lustre Security Group" --query "GroupId" --output text)
+
+aws ec2 authorize-security-group-ingress --group-id ${SECURITY_GROUP_ID} --protocol tcp --port 988 --cidr 192.168.0.0/16
+
+echo $SECURITY_GROUP_ID
+----
++
+3. Edit the *storageclass.yaml* manifest and update the highlighted fields. Here you will define the AZ, security group ID we created in previous step, FSx deployment type, and link the S3 bucket where you uploaded the training data. Make sure you add the perUnitStorageThroughput entry if it is missing as shown below:
++
+[source,bash,subs="verbatim,quotes"]
+----
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: fsx-sc
+provisioner: fsx.csi.aws.com
+parameters:
+  subnetId: <subnetID from step2.ii>
+  securityGroupIds: <security group ID from step 2.iii>
+  s3ImportPath: s3://<bucket_name>/xgboost-mnist
+  s3ExportPath: s3://<bucket_name>/xgboost-mnist
+  deploymentType: PERSISTENT_1
+  perUnitStorageThroughput: "50"  
+mountOptions:
+  - flock
+----
++
+
+4. Create the storageclass by running command below:
++
+[source,bash,subs="verbatim,quotes"]
+----
+kubectl apply -f storageclass.yaml
+----
++
+
+5. Download persistent volume claim manifest:
++
+[source,bash,subs="verbatim,quotes"]
+----
+curl -o claim.yaml https://raw.githubusercontent.com/kubernetes-sigs/aws-fsx-csi-driver/master/examples/kubernetes/dynamic_provisioning_s3/specs/claim.yaml
+----
++
+
+6.  (Optional) Edit the *claim.yaml* file to change the size of FSx for Lustre file system:
++
+[source,bash,subs="verbatim,quotes"]
+----
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fsx-claim
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: fsx-sc
+  resources:
+    requests:
+      storage: 1200Gi
+----
++
+
+7. Create the persistent volume claim (PVC) by running the command below:
++
+[source,bash,subs="verbatim,quotes"]
+----
+kubectl apply -f claim.yaml
+----
++
+You will see output as shown below:
++
+[source,bash,subs="verbatim,quotes"]
+----
+persistentvolumeclaim/fsx-claim created
+----
++
+
+8. Confirm the file system is provisioned using the commands shown below:
++
+[source,bash,subs="verbatim,quotes"]
+----
+kubectl get pvc
+----
++
+You will see output as shown below:
++
+[source,bash,subs="verbatim,quotes"]
+----
+NAME        STATUS    VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+fsx-claim   Pending 
+----
++
+Run below command to see detailed output:
++
+[source,bash,subs="verbatim,quotes"]
+----
+kubectl describe pvc fsx-claim
+----
++
+Once the file system is created you will see status as shown below:
++
+[source,bash,subs="verbatim,quotes"]
+----
+NAME        STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+fsx-claim   Bound    pvc-81dd4dcc-84d3-11ea-abe9-0efbf53c14d5   1200Gi     RWX            fsx-sc         11m
+----
++
+Once the PVC status changes from *“Pending”* to *“BOUND”*, note down the FSx file system ID (refer VolumeHandle parameter) and mountname (under VolumeAttributes). You will need this later for your SageMaker training job:
++
+[source,bash,subs="verbatim,quotes"]
+----
+kubectl describe persistentvolumes <PVC Volume name>
+----
++
+===============================
+*Example*: 
+
+kubectl describe persistentvolumes pvc-2f1b0976-7944-11ea-bdb4-1220f1cedf23
+===============================
++
+You will see output as shown below. note down the FSx file system ID (refer VolumeHandle parameter) and mountname (under VolumeAttributes):
++
+[source,bash,subs="verbatim,quotes"]
+----
+Name:            pvc-2f1b0976-7944-11ea-bdb4-1220f1cedf23
+Labels:          <none>
+Annotations:     pv.kubernetes.io/provisioned-by: fsx.csi.aws.com
+Finalizers:      [kubernetes.io/pv-protection]
+StorageClass:    fsx-sc
+Status:          Bound
+Claim:           default/fsx-claim
+Reclaim Policy:  Delete
+Access Modes:    RWX
+VolumeMode:      Filesystem
+Capacity:        1200Gi
+Node Affinity:   <none>
+Message:
+Source:
+    Type:              CSI (a Container Storage Interface (CSI) volume source)
+    Driver:            fsx.csi.aws.com
+    FSType:            ext4
+    VolumeHandle:      fs-02ab629ee455e7190
+    ReadOnly:          false
+    VolumeAttributes:      dnsname=fs-02ab629ee455e7190.fsx.us-east-1.amazonaws.com
+                           mountname=ublgnbmv
+                           storage.kubernetes.io/csiProvisionerIdentity=1586314237866-8081-fsx.csi.aws.com
+Events:                <none>
+----
++
+
+9. Below are some additional points to note:
+  a.  You can create multiple PVCs (file systems) using the same storageclass (linked to same S3 bucket)
+  b.  You can attach the same PVC to multiple containers in Read-Write mode.
+  c.  It took me ~5 minutes to create a 1200 GB FSx file system.
+  d.  When using PVC in read-write mode the data is persisted to FSx for Lustre file system. If you need to commit or backup the changes to linked S3 bucket you can use the DataRepositoryTask API.
+
+
+
+== Next section
+
+Click the button below to go to the next section.
+
+image::05-machine-learning-training.png[link=../05-machine-learning-training/, align="left",width=420]
+
+

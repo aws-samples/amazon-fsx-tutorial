@@ -1,0 +1,182 @@
+= Prepare for SageMaker training
+:toc:
+:icons:
+:linkattrs:
+:imagesdir: ../resources/images
+
+
+== Summary
+
+This section will cover steps to download the *MNIST dataset* in preparation for *SageMaker training using XGBoost* and also create a IAM role for training.
+
+
+== Duration
+
+NOTE: It will take approximately 10 minutes to complete this section.
+
+
+== Step-by-step Guide
+
+IMPORTANT: Read through all steps below before continuing.
+
+
+=== Download your training data:
+
+To generate your training data, complete the following steps:
+
+1.  Create an S3 bucket in us-east-1, which is the region we have used in this post:
++
+[source,bash,subs="verbatim,quotes"]
+----
+aws s3 mb s3://<bucket_name>
+----
++
+
+2.  Download and run the *upload_xgboost_mnist_dataset* command below to upload the dataset to S3 bucket:
+
++
+[source,bash,subs="verbatim,quotes"]
+----
+wget https://raw.githubusercontent.com/aws/amazon-sagemaker-operator-for-k8s/master/scripts/upload_xgboost_mnist_dataset/upload_xgboost_mnist_dataset
+
+chmod +x upload_xgboost_mnist_dataset
+
+./upload_xgboost_mnist_dataset --s3-bucket <bucket_name> --s3-prefix xgboost-mnist
+
+----
++
+
+3.  Verify that the data was successfully uploaded. You can verify this by checking your s3 bucket. You will see the output below for a successful upload from the previous step.
++
+[source,bash,subs="verbatim,quotes"]
+----
+Downloading dataset from http://deeplearning.net/data/mnist/mnist.pkl.gz
+train: (50000, 784) (50000,)
+Uploading 981250000 bytes to s3://<bucket_name>/xgboost-mnist/train/examples
+
+----
++
+
+
+=== Create an IAM Role for Amazon SageMaker
+
+1.  SageMaker assumes an execution role when training. This role should be different from the one attached to the OIDC provider. If you do not have a SageMaker execution role, create one with the following commands:
+
++
+[source,bash,subs="verbatim,quotes"]
+----
+export assume_role_policy_document='{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Effect": "Allow",
+    "Principal": {
+      "Service": "sagemaker.amazonaws.com"
+    },
+    "Action": "sts:AssumeRole"
+  }]
+}'
+
+aws iam create-role --role-name <rolename> --assume-role-policy-document file://<(echo "$assume_role_policy_document")
+----
++
+===============================
+*Example*: 
+
+aws iam create-role --role-name *sagemaker-eks-execution-role* --assume-role-policy-document file://<(echo "$assume_role_policy_document")
+===============================
+You will see output as shown below:
+
++
+[source,json,subs="verbatim,quotes"]
+----
+{
+    "Role": {
+        "Path": "/",
+        "RoleName": "sagemaker-eks-execution-role",
+        "RoleId": "AROAQMDZVU6IBXKWGCWM7",
+        "Arn": "arn:aws:iam::012345678910:role/sagemaker-eks-execution-role",
+        "CreateDate": "2020-04-08T03:28:30Z",
+        "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {
+                        "Service": "sagemaker.amazonaws.com"
+                    },
+                    "Action": "sts:AssumeRole"
+                }
+            ]
+        }
+    }
+}
+----
++
+
+Next, attach the policy to the role:
++
+[source,bash,subs="verbatim,quotes"]
+----
+aws iam attach-role-policy --role-name <role name> --policy-arn arn:aws:iam::aws:policy/AmazonSageMakerFullAccess
+----
++
+===============================
+*Example*: 
+aws iam attach-role-policy --role-name *sagemaker-eks-execution-role* --policy-arn arn:aws:iam::aws:policy/AmazonSageMakerFullAccess
+===============================
+
+2.  Create a policy document that provides permission to the SageMaker execution role to upload the trained model and attach it using commands below. Replace the s3 bucket name highlighted below:
++
+[source,bash,subs="verbatim,quotes"]
+----
+export assume_role_policy_document='{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Effect": "Allow",
+    "Action": [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:DeleteObject"
+            ],
+            "Resource": "arn:aws:s3:::<bucket_name>/*"
+  }]
+}'
+
+aws iam create-policy --policy-name <policyname> --policy-document file://<(echo "$assume_role_policy_document") --output=text
+----
++
+===============================
+*Example*: 
+aws iam create-policy --policy-name *fsx-sagemaker* --policy-document file://<(echo "$assume_role_policy_document") --output=text
+===============================
++
+You will see output as shown below:
++
+[source,bash,subs="verbatim,quotes"]
+----
+POLICY  arn:aws:iam::012345678910:policy/fsx-sagemaker  0 2020-04-08T04:46:40Z  v1  True  / 0 ANPAQMDZVU6IBGM6OJWWL fsx-sagemaker 2020-04-08T04:46:40Z
+----
++
+Next attach the policy to the sagemaker execution role you created earlier.
++
+[source,bash,subs="verbatim,quotes"]
+----
+aws iam attach-role-policy --role-name <rolename> --policy-arn arn:aws:iam::<accounted>:policy/<policyname>
+----
++
+===============================
+*Example*: 
+aws iam attach-role-policy --role-name *sagemaker-eks-execution-role* --policy-arn *arn:aws:iam::012345678910:policy/fsx-sagemaker*
+===============================
++
+
+
+== Next section
+
+Click the button below to go to the next section.
+
+image::04-configure-FSx-CSI-Driver.png[link=../04-configure-FSx-CSI-Driver/, align="left",width=420]
+
+
+
+

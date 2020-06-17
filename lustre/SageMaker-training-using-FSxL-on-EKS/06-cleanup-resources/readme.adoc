@@ -1,0 +1,47 @@
+= Clean up tutorial resources
+:toc:
+:icons:
+:linkattrs:
+:imagesdir: ../resources/images
+
+
+== Summary
+
+This section will clean-up resources created as part of your tutorial.
+
+In this tutorial, I showed you how to use *Amazon FSx for Lustre persistent file system* with *Amazon SageMaker* for machine learning training on an *Amazon EKS cluster*. First, we setup SageMaker Operator on your Kubernetes cluster. Next we configured Amazon FSx for Lustre persistent file system as a persistent volume claim using the CSI driver on our EKS cluster. Then, we prepared the training job to use Amazon FSx for Lustre, and initiated training a gradient-boosting model with MNIST dataset  using Amazon SageMaker Training Operator.
+
+Using Amazon FSx for Lustre accelerates your training jobs by enabling faster download of large datasets. Repeat training jobs can make use of dataset already available on Amazon FSx file system and avoid Amazon S3 request costs. 
+
+In this tutorial,we focused primarily on machine learning use case. Amazon FSx for Lustre persistent file system can be used with any high-performance workload on EKS clusters when applications need access to shared, persistent, and high-performance POSIX-compliant file system.
+
+
+== Duration
+
+NOTE: It will take approximately 5 minutes to complete this section.
+
+
+== Step-by-step Guide
+
+IMPORTANT: Read through all steps below before continuing.
+
+
+. To clean up your cluster run the below steps:
++
+[source,bash,subs="verbatim,quotes"]
+----
+kubectl delete -f train.yaml
+kubectl delete -f claim.yaml
+kubectl delete -f storageclass.yaml
+kubectl delete -k "github.com/kubernetes-sigs/aws-fsx-csi-driver/deploy/kubernetes/overlays/stable/?ref=master"
+eksctl delete iamserviceaccount --region ${AWS_REGION} --name fsx-csi-controller-sa --namespace kube-system --cluster ${CLUSTER_NAME}
+eksctl delete cluster ${CLUSTER_NAME}
+----
++
+. You can also delete the FSx Security group, IAM policies and roles you created as part of this blog if you no longer need them.
++
+
+
+
+
+

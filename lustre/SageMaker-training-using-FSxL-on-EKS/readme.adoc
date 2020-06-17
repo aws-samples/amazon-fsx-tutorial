@@ -1,0 +1,50 @@
+= Using a high-performance persistent storage for Machine learning workloads on Kubernetes!
+:icons:
+:linkattrs:
+:imagesdir: resources/images
+
+image:FSx-SageMaker-EKS-Tutorial.png[alt="Amazon EFS", align="left",width=420]
+
+This tutorial covers how to use *Amazon FSx for Lustre persistent deployment option*, a high-performance, highly available, scalable file storage for *machine learning* workloads on *Kubernetes containers*
+
+Organizations are modernizing their applications by adopting containers and microservices-based architectures. Because containers are transient in nature, long-running applications can benefit from keeping state in durable storage. *Amazon FSx for Lustre* is a simple, scalable, fully managed, high-performance file system enabling customers to build modern applications, persist and share data from their Kubernetes containers. Customers seek out Lustre for workloads where speed matters, such as machine learning, high performance computing (HPC), video processing, and financial modeling. By eliminating the traditional complexity of setting up and managing Lustre file systems, Amazon FSx allows you to spin up a high-performance file system in minutes, providing sub-millisecond latencies, up to hundreds of gigabytes per second of throughput and millions of IOPS.
+
+*Kubernetes* is an open-source container-orchestration system for automating the deployment, scaling, and management of containerized applications. *Amazon Elastic Kubernetes Service (Amazon EKS)* is a managed service that makes it easy for you to run Kubernetes on AWS without needing to stand up or maintain your own Kubernetes cluster. 
+
+First, let’s review some basic components of Kubernetes containers and why they need shared persistent storage in bit more detail. A *Pod* is the basic execution unit of a Kubernetes application and comprises of one or more containers with shared storage/network, and a specification for how to run containers. A Pod always runs on a *Node* and each Node is managed by a Kubernetes Master. A Node is a worker machine in Kubernetes and may be either a virtual or a physical machine. A Node can have multiple pods, and the Kubernetes master automatically handles scheduling the pods across the Nodes in the cluster.
+
+A Pod can use two type of volumes to store data: Regular and Persistent volumes. Regular volumes on Kubernetes clusters are deleted when the Pod hosting them shuts down. As a result, regular volumes are useful for storing temporary data that does not need to exist outside of the pod’s lifetime. A persistent volume is a cluster-wide resource that you can use to store data  beyond the lifetime of a pod. A *persistent volume* is hosted in its own Pod and can remain alive for as long as necessary for ongoing operations. A Pod can specify a set of shared storage Volumes. All containers in the Pod can access the shared volumes, allowing those containers to share data. Amazon offers customers a choice of Amazon Elastic Block Store (Amazon EBS), Amazon Elastic File System (Amazon EFS) and Amazon FSx for Lustre CSI drivers to provision volumes. 
+
+In this tutorial, I will focus on FSx for Lustre and cover how to provision Amazon FSx for Lustre persistent file system with Amazon EKS cluster, and accelerate your machine learning training using Amazon FSx and *Amazon SageMaker*. High performance workloads running on EKS clusters that require fast, highly available persistent storage can benefit from using Amazon FSx for Lustre. 
+
+*Amazon SageMaker* is a fully managed service that provides every developer and data scientist with the ability to build, train, and deploy machine learning (ML) models quickly. SageMaker removes the heavy lifting from each step of the machine learning process to make it easier to develop high quality models.
+
+We recently announced availability of persistent storage file system deployment option with Amazon FSx for Lustre. The persistent file system option provides highly available and durable storage for workloads that run for extended periods, or indefinitely, and are sensitive to disruptions.
+
+If a file server becomes unavailable on a persistent file system, it is replaced automatically within minutes of failure. During that time, client requests for data on that server transparently retry and eventually succeed after the file server is replaced. Data on persistent file systems is replicated on disks and any failed disks are automatically replaced, transparently.
+
+We recommend using Amazon FSx persistent file system option to provision persistent storage for your Kubernetes clusters. The *Amazon FSx for Lustre Container Storage Interface (CSI) Driver* provides a CSI interface that allows Amazon EKS clusters to manage the lifecycle of Amazon FSx for Lustre file systems. 
+
+
+This is a tutorial designed for architects and engineers who would like to learn how to use *Amazon FSx for Lustre* a high-performance persistent storage with your *kubernetes* workloads.
+
+== Diagram
+
+image::EKS-FSxL.png[align="left", width=600]
+
+=== Duration
+
+NOTE: It will take approximately 2 hours to complete and you will run it using your own AWS account.
+
+=== Pricing
+
+NOTE: You will incur charges for this tutorial.
+
+
+Click the button below to start the *Using a high-performance persistent storage for Machine learning workloads on Kubernetes* tutorial.
+
+image::01-create-environment.png[link=01-create-environment/, align="left",width=420]
+
+=== Participation
+
+We encourage participation; if you find anything, please submit an issue. However, if you want to help raise the bar, **submit a PR**!
