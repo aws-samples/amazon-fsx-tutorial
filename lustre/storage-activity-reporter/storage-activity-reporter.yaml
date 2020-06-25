@@ -1,0 +1,149 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of
+# this software and associated documentation files (the "Software"), to deal in
+# the Software without restriction, including without limitation the rights to
+# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+# the Software, and to permit persons to whom the Software is furnished to do so.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+# FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+# IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Description: Creates an scheduled Amazon CloudWatch Event that triggers AWS Lambda function to report storage/file systems activity for the selected period. 
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+    - Label:
+        default: Storage Activity Reporter
+      Parameters:
+        - StorageType
+        - Period
+        - Schedule
+        - EmailAddress
+  
+    ParameterLabels:
+      EmailAddress:
+        default: Email address
+      Schedule:
+        default: Task schedule cron expression
+      Period:
+        default: Period to check for storage IO activity
+      StorageType:
+        default: Storage Type
+
+Parameters:
+  EmailAddress:
+    Description: The email address for Amazon SNS notification.
+    Type: String
+  Schedule:
+    Description: Task schedule via cron expression (cron format in UTC - [minute hour day/of/month month day/of/week year], e.g. every day @ 1:15pm UTC would be 15 13 ? * * *)
+    Type: String
+    Default: "0 0 * * ? *"
+  Period:
+    Description: The period to check for storage IO activity in days. Example - 1 (for last 1 day), 2(for last 2 days)
+    Type: Number
+  StorageType:
+    AllowedValues:
+      - LUSTRE
+    Description: Select Type of Storage to check Storate Activity.
+    Type: String
+
+Resources:
+  # Cloudwatch events/rule resources [StorageActivityReporterEvent, StorageActivityReporterEventPermission]
+  StorageActivityReporterEvent:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: Schedule to run StorageActivityReporter lambda function and idenfity IOPS activity on storage devices 
+      Name: !Join [ '-', [ !Ref 'AWS::StackName', 'StorageActivityReporter-scheduled-event'] ]
+      ScheduleExpression: !Join [ '', [ 'cron(', !Ref Schedule, ')' ] ]
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt StorageActivityReporter.Arn
+          Id: StorageActivityReporter1
+  StorageActivityReporterEventPermission: 
+    Type: AWS::Lambda::Permission
+    Properties: 
+      FunctionName: !Ref StorageActivityReporter
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt StorageActivityReporterEvent.Arn
+
+  # Lambda function and role [StorageActivityReporter,StorageActivityReporterLambdaRole]
+  StorageActivityReporter:
+    DependsOn: StorageActivityReporterLambdaRole
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}
+      Description: Lambda function to report Storage Activity 
+      Environment:
+        Variables:
+          Period: !Ref Period
+          Region: !Ref AWS::Region
+          SNSTopic: !Ref SNSTopic
+          StorageType: !Ref StorageType
+      Handler: lambda_function.lambda_handler
+      Role: !GetAtt StorageActivityReporterLambdaRole.Arn
+      Code:
+        S3Bucket: !Sub solution-references-${AWS::Region}
+        S3Key: fsx/storage-activity-reporter/storage-activity-reporter.zip
+      Runtime: python3.7
+      Timeout: 900
+
+  StorageActivityReporterLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub StorageReportLambdaRole-Role-${AWS::StackName}
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AWSLambdaExecute'
+      Path: "/"
+      Policies:
+      - PolicyName: !Sub StorageReportLambdaRole-Policy-${AWS::StackName}
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
+          - Effect: Allow
+            Action:
+            - fsx:DescribeFileSystems
+            Resource: 
+            - arn:aws:fsx:*:*:file-system/*     
+          - Effect: Allow
+            Action:
+            - cloudwatch:Get*  
+            Resource: "*" 
+          - Effect: Allow
+            Action:
+            - sns:Publish
+            Resource: !Sub arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${SNSTopic.TopicName}
+
+  # SNS Topic to send notification [SNSTopic]
+  SNSTopic:
+    Type: AWS::SNS::Topic
+    Properties: 
+      DisplayName: !Join [ '-', [ !Ref 'AWS::StackName', 'storage-activity-reporter' ] ]
+      Subscription:
+      - Endpoint: !Ref EmailAddress
+        Protocol: email
+      TopicName: !Join [ '-', [ !Ref 'AWS::StackName', 'storage-activity-reporter' ] ]
