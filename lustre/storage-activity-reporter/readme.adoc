@@ -9,8 +9,6 @@ This sample code is made available under the MIT-0 license. See the LICENSE file
 
 Errors or corrections? Contact kurdekar@amazon.com
 
-Click the button below to access the Amazon FSx for Lustre or Amazon FSX for Windows File Server tutorial.
-
 
 === Overview
 
