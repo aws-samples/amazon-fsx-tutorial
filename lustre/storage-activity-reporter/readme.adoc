@@ -14,11 +14,11 @@ Errors or corrections? Contact kurdekar@amazon.com
 
 The Storage Activtiy Reporter is an AWS CloudFormation template that creates AWS resources to generate a scheduled report about storage IO activity on your Amazon FSx for Lustre file systems.
 
-Business Units, departments and users spin up multiple FSx for Lustre file systems for processing high-performance workloads and spin down these file systems once these short-term workloads are completed. Occasionally, these users may forget to spin down the file system once their activity is completed. Why continue paying for idle and orphaned file systems that are no longer in use?
+Business Units, Departments and Users spin up multiple FSx for Lustre file systems for processing high-performance workloads and spin them down once these short-term workloads are completed. Occasionally, these users may forget to spin down the file system once their activity is completed. Why continue paying for idle and orphaned file systems that are no longer in use?
 
 The Storage Activity Reporter checks for IO activity on Fsx for Lustre file systems in your account for the selected period, and generates a report on Peak and Average IOPS per file system.
 
-IT operations teams, Cloud engineers and Users can review this report, validate the IO in-activity and take appropriate action on any idle file systems that are no longer being used.
+IT operations teams, Cloud engineers and Users can review this report, validate the IO in-activity and take appropriate action on any idle file systems that are no longer in-use.
 
 
 === Resources created
@@ -52,17 +52,17 @@ Edit *S3Bucket* and *S3Key* in the CloudFormation template to point to your own 
 
 Next, Upload the deployment package to S3Bucket and S3Key specified in your CloudFormation template. Upload your modified CloudFormation template to the your S3 bucket.
 
-Finally, Launch your CloudFormation Stack link:https://console.aws.amazon.com/cloudformation/[Amazon CloudFormation] console.
+Finally, Launch your CloudFormation stack link:https://console.aws.amazon.com/cloudformation/[Amazon CloudFormation] console.
 
 
-You can also launch the CloudFormation Stack directly from here:
+You can also launch the CloudFormation stack directly using the links below:
 
 The CloudFormation template.
 
 link:https://solution-references.s3.amazonaws.com/fsx/storage-activity-reporter/storage-activity-reporter.yaml[https://solution-references.s3.amazonaws.com/fsx/storage-activity-reporter/storage-activity-reporter.yaml]
 
 
-python code for Lambda function will be downloaded from an Amazon S3 bucket.
+Python code for Lambda function will be downloaded from an Amazon S3 bucket.
 
 link:https://solution-references.s3.amazonaws.com/fsx/storage-activity-reporter/storage-activity-reporter.zip[https://solution-references.s3.amazonaws.com/fsx/storage-activity-reporter/storage-activity-reporter.zip]
 
