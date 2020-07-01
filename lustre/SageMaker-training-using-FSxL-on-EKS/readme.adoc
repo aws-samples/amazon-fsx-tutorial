@@ -5,17 +5,22 @@
 
 image:FSx-SageMaker-EKS-Tutorial.png[alt="Amazon EFS", align="left",width=420]
 
-This tutorial covers how to use *Amazon FSx for Lustre persistent deployment option*, a high-performance, highly available, scalable file storage for *machine learning* workloads on *Kubernetes containers*
+This tutorial covers how to use *Amazon FSx for Lustre persistent deployment option*, a high-performance, highly available, scalable file storage for *machine learning* workloads on *Kubernetes containers*.
 
 Organizations are modernizing their applications by adopting containers and microservices-based architectures. Many customers are deploying high-performance workloads on containers to power microservices architecture, and require access to low latency and high throughput shared storage from these containers. Because containers are transient in nature, these long-running applications also require data to be stored in durable storage. *Amazon FSx for Lustre (FSx for Lustre)* provides the world's most popular high-performance file system, now fully managed and integrated with Amazon S3. It offers a POSIX-compliant, fast parallel file system to enable peak performance and highly durable storage for your Kubernetes workloads. By getting rid of the traditional complexity of setting up and managing Lustre file systems, FSx for Lustre allows you to spin up a high-performance file system in minutes. FSx for Lustre provides sub-millisecond latencies, up to hundreds of gigabytes per second of throughput, and millions of IOPS. Customers use FSx for Lustre for workloads where speed matters, such as machine learning, high performance computing (HPC), video processing, and financial modeling. 
 
 *Kubernetes* is an open-source container-orchestration system for automating the deployment, scaling, and management of containerized applications. AWS makes it easy to run Kubernetes without needing to install and operate your own Kubernetes control plane or worker nodes using our managed service *Amazon Elastic Kubernetes Service (Amazon EKS)*.Amazon EKS runs Kubernetes control plane instances across multiple Availability Zones to ensure high availability. Amazon EKS automatically detects and replaces unhealthy control plane instances, and it provides automated version upgrades and patching for them.
 
+In this tutorial, I will focus on FSx for Lustre and cover how to provision *Amazon FSx for Lustre persistent file system* with Amazon EKS cluster, and accelerate your machine learning training using Amazon FSx and *Amazon SageMaker*. High performance workloads running on EKS clusters that require fast, highly available persistent storage can benefit from using Amazon FSx for Lustre. I will cover training a gradient-boosting model on the link::https://en.wikipedia.org/wiki/[MNIST_database[Modified National Institute of Standards and Technology (MNIST) dataset] using the Amazon SageMaker training operator. The MNIST dataset contains images of handwritten digits from 0 to 9 and is a popular machine learning problem. The MNIST dataset contains 60,000 training images and 10,000 test images.
+
+== Basic Components of Kubernetes Containers
+
 First, , let’s review some basic components of Kubernetes cluster and why we need shared persistent storage. A *Pod* is the basic execution unit of a Kubernetes application and comprises of one or more containers with shared storage/network, and a specification for how to run containers. A Pod always runs on a Node and each Node is managed by a Kubernetes Master. A *Node* is a worker machine in Kubernetes and may be either a virtual or a physical machine. A Node can have multiple pods, and the Kubernetes master automatically handles scheduling the pods across the Nodes in the cluster.These set of Nodes together with components that represent the control plane form a Kubernetes cluster.
 
 A Pod can use two types of volumes to store data: Regular and Persistent volumes. Regular volumes on Kubernetes clusters are deleted when the Pod hosting them shuts down. As a result, regular volumes are useful for storing temporary data that does not need to exist outside of the pod’s lifetime. A *persistent volume* is a cluster-wide resource that you can use to store data  beyond the lifetime of a pod. A persistent volume is hosted in its own Pod and can remain alive for as long as necessary for ongoing operations. A Pod can specify a set of shared storage Volumes. All containers in the Pod can access the shared volumes, allowing those containers to share data. Amazon offers customers a choice of *Amazon Elastic Block Store (Amazon EBS)*, *Amazon Elastic File System (Amazon EFS)* and *Amazon FSx for Lustre* *CSI drivers* to provision persistent volumes. 
 
-In this tutorial, I will focus on FSx for Lustre and cover how to provision *Amazon FSx for Lustre persistent file system* with Amazon EKS cluster, and accelerate your machine learning training using Amazon FSx and *Amazon SageMaker*. High performance workloads running on EKS clusters that require fast, highly available persistent storage can benefit from using Amazon FSx for Lustre. 
+
+== FSx for Lustre persistent file systems
 
 Earlier this year, we announced availability of persistent storage file system deployment option with Amazon FSx for Lustre. The persistent file system option provides highly available and durable storage for workloads that run for extended periods, or indefinitely, and are sensitive to disruptions. 
 
@@ -23,12 +28,12 @@ Amazon FSx for Lustre stores data across multiple network file servers to maximi
 
 We recommend using Amazon FSx persistent file system option to provision persistent storage for your Kubernetes clusters. The *Amazon FSx for Lustre Container Storage Interface (CSI) Driver* provides a CSI interface that allows Amazon EKS clusters to manage the lifecycle of Amazon FSx for Lustre file systems. 
 
+== SageMaker Operator for Kubernetes
+
 Next, let’s review how you can run machine learning workloads using Amazon SageMaker Operators for Kubernetes. Amazon SageMaker is a fully managed service that provides every developer and data scientist with the ability to build, train, and deploy machine learning (ML) models quickly. SageMaker removes the heavy lifting from each step of the machine learning process to make it easier to develop high quality models.
 
 Amazon SageMaker Operators for Kubernetes makes it easier for developers and data scientists using Kubernetes to train, tune, and deploy machine learning (ML) models in Amazon SageMaker. You can install these SageMaker Operators on your Kubernetes cluster in Amazon Elastic Kubernetes Service (EKS) to create SageMaker jobs natively using the Kubernetes API and command-line Kubernetes tools such as ‘kubectl’.
  
-In the GitHub tutorial I cover training a gradient-boosting model on the link::https://en.wikipedia.org/wiki/MNIST_database[Modified National Institute of Standards and Technology (MNIST) dataset] using the Amazon SageMaker training operator. The MNIST dataset contains images of handwritten digits from 0 to 9 and is a popular machine learning problem. The MNIST dataset contains 60,000 training images and 10,000 test images.
-
 This is a tutorial designed for architects and engineers who would like to learn how to use *Amazon FSx for Lustre* a high-performance persistent storage with your *kubernetes* workloads.
 
 == Diagram
