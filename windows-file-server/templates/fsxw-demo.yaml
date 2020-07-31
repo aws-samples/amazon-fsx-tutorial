@@ -9,7 +9,7 @@ Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
     - Label:
-        default: Demo Environment
+        default: Virtual Private Cloud
       Parameters:
         - VpcCidr
         - AvailabilityZones
