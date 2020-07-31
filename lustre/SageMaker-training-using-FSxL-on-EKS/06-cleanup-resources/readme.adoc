@@ -1,0 +1,47 @@
+= Clean up tutorial resources
+:toc:
+:icons:
+:linkattrs:
+:imagesdir: ../resources/images
+
+
+== Summary
+
+This section will clean-up resources created as part of your tutorial.
+
+In this tutorial, I showed you how to use an *Amazon FSx for Lustre persistent file system* with *Amazon SageMaker* to train a machine learning model on an *Amazon EKS cluster*. First, we setup SageMaker Operator on your Kubernetes cluster. Next, we configured an Amazon FSx for Lustre persistent file system as a persistent volume using the CSI driver on our EKS cluster. Then, we configured the training job to use Amazon FSx for Lustre for your input data source, and initiated training on a gradient-boosting model using the Amazon SageMaker Training Operator.
+
+Using Amazon FSx for Lustre accelerates your training jobs by enabling faster download of large datasets. Subsequent training jobs can make use of the dataset already available on an Amazon FSx file system and avoid repeated Amazon S3 requests costs. 
+
+In this blog post we focused primarily on a machine learning use case. Amazon FSx for Lustre persistent file systems can be used with any high-performance workload on EKS clusters when applications need access to a shared, persistent, and high-performance POSIX-compliant file system.
+
+
+== Duration
+
+NOTE: It will take approximately 5 minutes to complete this section.
+
+
+== Step-by-step Guide
+
+IMPORTANT: Read through all steps below before continuing.
+
+
+. To clean up your cluster run the below steps:
++
+[source,bash,subs="verbatim,quotes"]
+----
+kubectl delete -f train.yaml
+kubectl delete -f claim.yaml
+kubectl delete -f storageclass.yaml
+kubectl delete -k "github.com/kubernetes-sigs/aws-fsx-csi-driver/deploy/kubernetes/overlays/stable/?ref=master"
+eksctl delete iamserviceaccount --region ${AWS_REGION} --name fsx-csi-controller-sa --namespace kube-system --cluster ${CLUSTER_NAME}
+eksctl delete cluster ${CLUSTER_NAME}
+----
++
+. You can also delete the FSx Security group, IAM policies and roles you created as part of this blog if you no longer need them.
++
+
+
+
+
+

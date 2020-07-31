@@ -1,0 +1,266 @@
+= Configure Amazon SageMaker operator for Kubernetes
+:toc:
+:icons:
+:linkattrs:
+:imagesdir: ../resources/images
+
+
+== Summary
+
+This section will cover configuring *Amazon SageMaker Operator for Kubernetes*. First, we will setup IAM roles and permissions for SageMaker operator and then setup the operator on the kubernetes cluster.
+
+
+== Duration
+
+NOTE: It will take approximately 10 minutes to complete this section.
+
+
+== Step-by-step Guide
+
+IMPORTANT: Read through all steps below before continuing.
+
+For the operator to access your SageMaker resources, you first need to configure a Kubernetes service account with an OIDC authenticated role that has the proper permissions. For more information, see link:https://docs.aws.amazon.com/eks/latest/userguide/enable-iam-roles-for-service-accounts.html[Enabling IAM Roles for Service Accounts on your Cluster].
+
+=== Setup IAM roles and permissions for SageMaker Operator:
+
+1. Associate an IAM OpenID Connect (OIDC) provider with your EKS cluster for authentication with AWS resources using commands shown below:
++
+[source,bash,subs="verbatim,quotes"]
+----
+# Set the AWS region and EKS cluster name
+export CLUSTER_NAME=<EKS CLUSTER NAME>
+export AWS_REGION=<AWS Region>
+----
++
+===============================
+*Example*:
+
+export CLUSTER_NAME="FSxL-Persistent-Cluster"
+
+export AWS_REGION="us-east-1"
+===============================
++
+Next, Run the command shown below:
++
+[source,bash,subs="verbatim,quotes"]
+----
+eksctl utils associate-iam-oidc-provider --cluster ${CLUSTER_NAME} --region ${AWS_REGION} --approve
+
+----
++
+
+You should see output as shown below:
++
+[source,bash,subs="verbatim,quotes"]
+----
+[i]  eksctl version 0.16.0
+[i]  using region us-east-1
+[i]  will create IAM Open ID Connect provider for cluster "FSxL-Persistent-Cluster" in "us-east-1"
+[✔]  created IAM Open ID Connect provider for cluster "FSxL-Persistent-Cluster" in "us-east-1"
+
+----
++
+
+Now that your Kubernetes cluster in EKS has an OIDC identity provider, you can create a role and give it permissions.
+
+2.  Obtain the OIDC issuer URL using command below:
+
++
+[source,bash,subs="verbatim,quotes"]
+----
+aws eks describe-cluster --name ${CLUSTER_NAME} --region ${AWS_REGION} --query cluster.identity.oidc.issuer --output text
+----
++
+
+The output from above command returns a URL as shown below. If the output is None, make sure your AWS CLI has a version listed in Prerequisites.
++
+[source,bash,subs="verbatim,quotes"]
+----
+https://oidc.eks.${AWS_REGION}.amazonaws.com/id/{Your OIDC ID}
+----
++
+
+===============================
+*Example*: https://oidc.eks.us-east-1.amazonaws.com/id/*3A12CB18E75BD1133D141F6C7B5FB266*
+===============================
+
+3.  Next use the OIDC ID returned by previous command to create your role. Create a new file named *trust.json* using the command shown below. Replace the *AWS account ID* with your own ID, *EKS cluster region* and *OIDC ID*:
++
+[source,json]
+----
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Effect": "Allow",
+    "Principal": {
+      "Federated": "arn:aws:iam::<AWS account ID>:oidc-provider/oidc.eks.<EKS cluster region>.amazonaws.com/id/<OIDC ID>"
+    },
+    "Action": "sts:AssumeRoleWithWebIdentity",
+    "Condition": {
+      "StringEquals": {
+        "oidc.eks.<EKS cluster region>.amazonaws.com/id/<OIDC ID>:aud": "sts.amazonaws.com",
+        "oidc.eks.<EKS cluster region>.amazonaws.com/id/<OIDC ID>:sub": "system:serviceaccount:sagemaker-k8s-operator-system:sagemaker-k8s-operator-default"
+      }
+    }
+  }]
+}
+----
++
+
+===============================
+*Example*: 
+[source,json]
+----
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Effect": "Allow",
+    "Principal": {
+      "Federated": "arn:aws:iam::012345678910:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/3A12CB18E75BD1133D141F6C7B5FB266"
+    },
+    "Action": "sts:AssumeRoleWithWebIdentity",
+    "Condition": {
+      "StringEquals": {
+        "oidc.eks.us-east-1.amazonaws.com/id/3A12CB18E75BD1133D141F6C7B5FB266:aud": "sts.amazonaws.com",
+        "oidc.eks.us-east-1.amazonaws.com/id/3A12CB18E75BD1133D141F6C7B5FB266:sub": "system:serviceaccount:sagemaker-k8s-operator-system:sagemaker-k8s-operator-default"
+      }
+    }
+  }]
+}
+----
+===============================
+
+
+4.  Create a new IAM role that can be assumed by the cluster service accounts. The output from the command will contain the role ARN:
++
+[source,bash,subs="verbatim,quotes"]
+----
+aws iam create-role --role-name <rolename> --assume-role-policy-document file://trust.json --output=text 
+----
++
+===============================
+*Example*: 
+
+aws iam create-role --role-name *eks-fsx-cluster-role* --assume-role-policy-document file://trust.json --output=text
+
+ROLE	*arn:aws:iam::012345678910:role/eks-fsx-cluster-role*	2020-04-07T21:11:34Z	/	AROAQMDZVU6IANBHRF4QQ	eks-fsx-cluster-role
+ASSUMEROLEPOLICYDOCUMENT	2012-10-17
+STATEMENT	sts:AssumeRoleWithWebIdentity	Allow
+STRINGEQUALS	sts.amazonaws.com	system:serviceaccount:sagemaker-k8s-operator-system:sagemaker-k8s-operator-default
+PRINCIPAL	arn:aws:iam::012345678910:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/3A12CB18E75BD1133D141F6C7B5FB266
+===============================
+
+
+5. Give this new role access to Amazon SageMaker and attach the AmazonSageMakerFullAccess using code below:
++
+[source,bash,subs="verbatim,quotes"]
+----
+aws iam attach-role-policy --role-name <rolename> --policy-arn arn:aws:iam::aws:policy/AmazonSageMakerFullAccess
+----
++
+===============================
+*Example*: 
+
+aws iam attach-role-policy --role-name eks-fsx-cluster-role --policy-arn arn:aws:iam::aws:policy/AmazonSageMakerFullAccess
+===============================
+
+
+
+=== Setup the operator on the Kubernetes cluster:
+
+6. Install Amazon SageMaker Operators for Kubernetes from the link:https://github.com/aws/amazon-sagemaker-operator-for-k8s[GitHub repo] by downloading a YAML configuration file that configures your Kubernetes cluster with the custom resource definitions and operator controller service. See command below:
++
+[source,bash,subs="verbatim,quotes"]
+----
+wget https://raw.githubusercontent.com/aws/amazon-sagemaker-operator-for-k8s/master/release/rolebased/installer.yaml
+----
++
+
+7. In the *installer.yaml* file, update the *eks.amazonaws.com/role-arn* with the ARN from your OIDC-based role from the previous step. This will be *eks-fsx-cluster-role* we created earlier. You can see the example below:
++
+[source,bash,subs="verbatim,quotes"]
+----
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: <arn of OIDC-based role>
+  name: sagemaker-k8s-operator-default
+  namespace: sagemaker-k8s-operator-system
+----
++
+
+===============================
+*Example*: 
+[source,bash]
+----
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::012345678910:role/eks-fsx-cluster-role
+  name: sagemaker-k8s-operator-default
+  namespace: sagemaker-k8s-operator-system
+----
+===============================
+
+
+8. On your Kubernetes cluster, install the Amazon SageMaker CRDs and set up your operators as shown below:
++
+[source,bash,subs="verbatim,quotes"]
+----
+kubectl apply -f installer.yaml
+----
++
+
+You will see output as shown below:
++
+[source,bash,subs="verbatim,quotes"]
+----
+namespace/sagemaker-k8s-operator-system created
+customresourcedefinition.apiextensions.k8s.io/batchtransformjobs.sagemaker.aws.amazon.com created
+customresourcedefinition.apiextensions.k8s.io/endpointconfigs.sagemaker.aws.amazon.com created
+customresourcedefinition.apiextensions.k8s.io/hostingdeployments.sagemaker.aws.amazon.com created
+customresourcedefinition.apiextensions.k8s.io/hyperparametertuningjobs.sagemaker.aws.amazon.com created
+customresourcedefinition.apiextensions.k8s.io/models.sagemaker.aws.amazon.com created
+customresourcedefinition.apiextensions.k8s.io/trainingjobs.sagemaker.aws.amazon.com created
+serviceaccount/sagemaker-k8s-operator-default created
+role.rbac.authorization.k8s.io/sagemaker-k8s-operator-leader-election-role created
+clusterrole.rbac.authorization.k8s.io/sagemaker-k8s-operator-manager-role created
+clusterrole.rbac.authorization.k8s.io/sagemaker-k8s-operator-proxy-role created
+rolebinding.rbac.authorization.k8s.io/sagemaker-k8s-operator-leader-election-rolebinding created
+clusterrolebinding.rbac.authorization.k8s.io/sagemaker-k8s-operator-manager-rolebinding created
+clusterrolebinding.rbac.authorization.k8s.io/sagemaker-k8s-operator-proxy-rolebinding created
+service/sagemaker-k8s-operator-controller-manager-metrics-service created
+deployment.apps/sagemaker-k8s-operator-controller-manager created
+----
++
+
+9. Verify that Amazon SageMaker operators are available in your Kubernetes cluster using command below:
++
+[source,bash,subs="verbatim,quotes"]
+----
+kubectl get crd | grep sagemaker
+----
++
+
+You will see output as shown below:
++
+[source,bash,subs="verbatim,quotes"]
+----
+batchtransformjobs.sagemaker.aws.amazon.com         2020-04-07T21:17:59Z
+endpointconfigs.sagemaker.aws.amazon.com            2020-04-07T21:17:59Z
+hostingdeployments.sagemaker.aws.amazon.com         2020-04-07T21:17:59Z
+hyperparametertuningjobs.sagemaker.aws.amazon.com   2020-04-07T21:17:59Z
+models.sagemaker.aws.amazon.com                     2020-04-07T21:17:59Z
+trainingjobs.sagemaker.aws.amazon.com               2020-04-07T21:17:59Z
+----
++
+
+With these operators, all Amazon SageMaker’s managed and secured ML infrastructure and software optimization at scale is now available as a custom resource in your Kubernetes cluster.
+
+== Next section
+
+Click the button below to go to the next section.
+
+image::03-Prepare-SageMaker-Training.png[link=../03-Prepare-SageMaker-Training/, align="left",width=420]
+
+
+
+

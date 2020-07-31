@@ -1,0 +1,101 @@
+= Storage Activity Reporter for Amazon FSx for Lustre file systems
+:icons:
+:linkattrs:
+:imagesdir: resources/images
+
+
+© 2020 Amazon Web Services, Inc. and its affiliates. All rights reserved.
+This sample code is made available under the MIT-0 license. See the LICENSE file.
+
+Errors or corrections? Contact kurdekar@amazon.com
+
+
+=== Overview
+
+The Storage Activtiy Reporter is an AWS CloudFormation template that creates AWS resources to generate a scheduled report about storage IO activity on your Amazon FSx for Lustre file systems.
+
+Business Units, Departments and Users spin up multiple FSx for Lustre file systems for processing high-performance workloads and spin them down once these short-term workloads are completed. Occasionally, these users may forget to spin down the file system once their activity is completed. Why continue paying for idle and orphaned file systems that are no longer in use?
+
+The Storage Activity Reporter checks for IO activity on Fsx for Lustre file systems in your account for the selected period, and generates a report on Peak and Average IOPS per file system.
+
+IT operations teams, Cloud engineers and Users can review this report, validate the IO in-activity and take appropriate action on any idle file systems that are no longer in-use.
+
+
+=== Resources created
+
+Below is a list of AWS resources created when launching the stack using the CloudFormation template.
+
+•	CloudFormation stack
+•	Lambda function
+•	Lambda permissions
+•	IAM role
+•	CloudWatch scheduled event
+•	SNS topic
+
+
+=== Launching the stack
+
+Clone the github repo or download the cloudFormation template *storage-activity-reporter.yaml* and Lambda deployment package *storage-activity-reporter.zip*
+
+
+Edit *S3Bucket* and *S3Key* in the CloudFormation template to point to your own S3 bucket and prefix where the Lambda deployment package will be located:
+
+
+[source,bash]
+----
+     Code:
+        S3Bucket: !Sub solution-references-${AWS::Region}
+        S3Key: fsx/storage-activity-reporter/storage-activity-reporter.zip
+
+----
+
+
+Next, Upload the deployment package to S3Bucket and S3Key specified in your CloudFormation template. Upload your modified CloudFormation template to the your S3 bucket.
+
+Finally, Launch your CloudFormation stack link:https://console.aws.amazon.com/cloudformation/[Amazon CloudFormation] console.
+
+
+You can also launch the CloudFormation stack directly using the links below:
+
+The CloudFormation template.
+
+link:https://solution-references.s3.amazonaws.com/fsx/storage-activity-reporter/storage-activity-reporter.yaml[https://solution-references.s3.amazonaws.com/fsx/storage-activity-reporter/storage-activity-reporter.yaml]
+
+
+Python code for Lambda function will be downloaded from an Amazon S3 bucket.
+
+link:https://solution-references.s3.amazonaws.com/fsx/storage-activity-reporter/storage-activity-reporter.zip[https://solution-references.s3.amazonaws.com/fsx/storage-activity-reporter/storage-activity-reporter.zip]
+
+==== Dependent scripts (not needed if launching the stack using the links above)
+
+This solution relies on the python script that is included in the *storage-activity-reporter.zip* deployment package.
+
+=== Examples
+
+Example below shows CloudFormation stack input parameters to schedule the report to run every day at 08:00 AM
+
+[cols="3,4"]
+|===
+| *Storage Type*
+a| *_Select_* - *LUSTRE*
+| *Period to check for storage IO activity*
+a| *_Enter_* - *Number of Days* Ex:1
+| *Task schedule cron expression*
+a| *_Enter_* - *cron expression* Ex: 0 8 * * ? * 
+| *Email Address*
+a| *_Enter_* - *your-email*
+|===
+
+
+image::storage-activty-reporter-cf-stack.png[align="left", width=600]
+
+
+Example below shows output from CloudWatch Logs:
+
+image::cloudwatch-logs.png[align="left", width=600]
+
+You will also receive a SNS notification once the report is generated to your email address specified during the stack creation.
+
+=== Participation
+
+We encourage participation; if you find anything, please submit an issue. However, if you want to help raise the bar, **submit a PR**!

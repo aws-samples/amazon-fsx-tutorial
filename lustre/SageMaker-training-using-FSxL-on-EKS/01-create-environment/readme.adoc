@@ -1,0 +1,112 @@
+= Prerequisites
+:toc:
+:icons:
+:linkattrs:
+:imagesdir: ../resources/images
+
+
+== Summary
+
+This section will cover prerequisites for completing this tutorial. *you will need a machine you can use to control the Kubernetes cluster (for example, an EC2 instance or AWS Cloud 9 ).*
+
+If you do not have a EC2 instance available, *Deploy* an EC2 instance first.
+
+Open the link:https://console.aws.amazon.com/ec2/[Amazon EC2] console.
+
+TIP: *_Context-click (right-click)_* the link above and open the link in a new tab or window to make it easy to navigate between this github tutorial and the Amazon EC2 console.
+
+
+== Duration
+
+NOTE: It will take approximately 30 minutes to complete this section.
+
+
+== Step-by-step Guide
+
+IMPORTANT: Read through all steps below before continuing.
+
+
+. Complete the following prerequisites:
+
+.. If you are not using an AMI for your EC2 instance that has Python3, boto3, numpy, and argparse installed, then install them as shown below:
++
+[source,bash]
+----
+sudo yum install -y python3 git
+export PATH=~/.local/bin:$PATH
+sudo pip3 install boto3 numpy argparse
+
+----
++
+..	Please make sure you have configured your AWS CLI credentials using command below.
++
+[source,bash]
+----
+aws configure
+----
++
+..	Please make sure you have version 1.18.17 or later of the AWS CLI installed. You can check your currently installed version with the aws --version command. To install or upgrade the AWS CLI, see link:https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html[Installing the AWS CLI].
++
+[source,bash]
+----
+aws --version
+sudo pip3 install awscli --upgrade
+----
++
+..	Please make sure you have version *0.16.0* or later of *eksctl* installed. You can check your currently installed version with the *eksctl version* command. To install or upgrade *eksctl*, see link:https://docs.aws.amazon.com/eks/latest/userguide/eksctl.html#installing-eksctl[Installing or Upgrading eksctl]. You can see example commands below for Linux.
++
+[source,bash]
+----
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+sudo mv /tmp/eksctl /usr/local/bin
+eksctl version
+----
++
+..	The latest version of kubectl installed that aligns with your cluster version. You can check your currently installed version with the *kubectl version –short --client* command. For more information, see link:https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html[Installing kubectl].You can see example commands below for Linux.
++
+[source,bash]
+----
+curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/kubectl
+chmod +x ./kubectl
+mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+kubectl version --short --client
+----
++
+.. AWS IAM Authenticator for Kubernetes – For more information, see link:https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html[Installing aws-iam-authenticator].You can see example commands below for Linux.
++
+[source,bash]
+----
+curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticator
+openssl sha1 -sha256 aws-iam-authenticator
+chmod +x ./aws-iam-authenticator
+mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
+echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+aws-iam-authenticator help
+----
++
+..	An existing Amazon EKS cluster. If you don’t currently have a cluster, see link:https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html[Getting Started with Amazon EKS] to create one. You can use example shown below to create a new eks cluster:
++
+[source,bash]
+----
+eksctl create cluster --name <Cluster Name> --region <AWS region> --zones <Availability zones> --nodegroup-name <Nodegroup Name> --node-type <EC2 instance type> --nodes 1 --nodes-min 1
+----
++
+===============================
+*Example*:
+eksctl create cluster --name FSxL-Persistent-Cluster --region us-east-1 --zones us-east-1a,us-east-1b --nodegroup-name FSxL-Persistent-Cluster-workers --node-type c5.large --nodes 1 --nodes-min 1
+===============================
++
+
+
+
+
+== Next section
+
+Click the button below to go to the next section.
+
+image::02-create-SageMaker-Operator-for-Kubernetes.png[link=../02-create-SageMaker-Operator-for-Kubernetes/, align="left",width=420]
+
+
+
+

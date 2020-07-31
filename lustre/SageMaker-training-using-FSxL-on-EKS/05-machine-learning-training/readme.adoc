@@ -1,0 +1,311 @@
+= Train model using SageMaker XGBOOST
+:toc:
+:icons:
+:linkattrs:
+:imagesdir: ../resources/images
+
+
+== Summary
+
+This section will cover training your model using SageMaker XGBOOST from the resources we created in the previous sections of this tutorial.
+
+
+== Duration
+
+NOTE: It will take approximately 20 minutes to complete this section.
+
+
+== Step-by-step Guide
+
+IMPORTANT: Read through all steps below before continuing.
+
+
+=== Steps to start your SageMaker training job:
+
+1. Identify the shared node security group that was created as part of the eks stack as shown below. You will use this security group in the next step:
++
+[source,json,subs="verbatim,quotes"]
+----
+aws cloudformation describe-stacks --stack-name eksctl-${CLUSTER_NAME}-cluster --output text --query Stacks[0].Outputs[5]
+----
++
+Your output will be as shown below:
++
+[source,bash,subs="verbatim,quotes"]
+----
+eksctl-FSxL-Persistent-Cluster-cluster::SharedNodeSecurityGroup SharedNodeSecurityGroup sg-05ced0a8ed10c058b
+----
++
+
+2.  Create a *train.yaml* YAML configuration file to start training. Specify *TrainingJob* as the kind to train your model on Amazon SageMaker, which is now a custom resource in your Kubernetes cluster.  Update the values for *s3OutputPath* with the *S3 bucket_name* and  *roleArn* with SageMaker execution role we created in section 03. Update the *fileSystemId* value with the FSx file system id and *directoryPath* value with the *mountname* from section 04 (output of kubectl describe persistentvolumes <pvc volume name>). Update the *securityGroupId*, *subnets*, you can refer storageclass.yaml file for these values:
+
++
+----
+apiVersion: sagemaker.aws.amazon.com/v1
+kind: TrainingJob
+metadata:
+  name: xgboost-mnist
+spec:
+  roleArn: arn:aws:iam::012345678910:role/sagemaker-eks-execution-role
+  region: us-east-1
+  algorithmSpecification:
+    trainingImage: 811284229777.dkr.ecr.us-east-1.amazonaws.com/xgboost:latest
+    trainingInputMode: File
+  outputDataConfig:
+    s3OutputPath: s3://<bucket_name>/xgboost-mnist/models/
+  inputDataConfig:
+    - channelName: train
+      dataSource:
+        fileSystemDataSource:
+          fileSystemType: FSxLustre
+          fileSystemAccessMode: ro
+          fileSystemId: fs-02ab629ee455e7190
+          directoryPath: /<mountpath>/xgboost-mnist
+      contentType: text/csv
+      compressionType: None
+    - channelName: validation
+      dataSource:
+        fileSystemDataSource:
+          fileSystemType: FSxLustre
+          fileSystemAccessMode: ro
+          fileSystemId: fs-02ab629ee455e7190
+          directoryPath: /<mountpath>/xgboost-mnist
+      contentType: text/csv
+      compressionType: None
+  resourceConfig:
+    instanceCount: 1
+    instanceType: ml.m4.xlarge
+    volumeSizeInGB: 5
+  hyperParameters:
+    - name: max_depth
+      value: "5"
+    - name: eta
+      value: "0.2"
+    - name: gamma
+      value: "4"
+    - name: min_child_weight
+      value: "6"
+    - name: silent
+      value: "0"
+    - name: objective
+      value: multi:softmax
+    - name: num_class
+      value: "10"
+    - name: num_round
+      value: "10"
+  stoppingCondition:
+    maxRuntimeInSeconds: 86400
+  vpcConfig:
+    securityGroupIds:
+      - <securitygroup id>
+    subnets:
+      - <subnet id>
+
+----
++
+===============================
+*Example*:
+
+----
+apiVersion: sagemaker.aws.amazon.com/v1
+kind: TrainingJob
+metadata:
+  name: xgboost-mnist
+spec:
+  roleArn: arn:aws:iam::012345678910:role/sagemaker-eks-execution-role
+  region: us-east-1
+  algorithmSpecification:
+    trainingImage: 811284229777.dkr.ecr.us-east-1.amazonaws.com/xgboost:latest
+    trainingInputMode: File
+  outputDataConfig:
+    s3OutputPath: s3://eks-fsx-test/xgboost-mnist/models/
+  inputDataConfig:
+    - channelName: train
+      dataSource:
+        fileSystemDataSource:
+          fileSystemType: FSxLustre
+          fileSystemAccessMode: ro
+          fileSystemId: fs-02ab629ee455e7190
+          directoryPath: /ublgnbmv/xgboost-mnist
+      contentType: text/csv
+      compressionType: None
+    - channelName: validation
+      dataSource:
+        fileSystemDataSource:
+          fileSystemType: FSxLustre
+          fileSystemAccessMode: ro
+          fileSystemId: fs-02ab629ee455e7190
+          directoryPath: /ublgnbmv/xgboost-mnist
+      contentType: text/csv
+      compressionType: None
+  resourceConfig:
+    instanceCount: 1
+    instanceType: ml.m4.xlarge
+    volumeSizeInGB: 5
+  hyperParameters:
+    - name: max_depth
+      value: "5"
+    - name: eta
+      value: "0.2"
+    - name: gamma
+      value: "4"
+    - name: min_child_weight
+      value: "6"
+    - name: silent
+      value: "0"
+    - name: objective
+      value: multi:softmax
+    - name: num_class
+      value: "10"
+    - name: num_round
+      value: "10"
+  stoppingCondition:
+    maxRuntimeInSeconds: 86400
+  vpcConfig:
+    securityGroupIds:
+      - sg-0ebce8827e27b4046
+    subnets:
+      - subnet-08f56b8a52f00fcc0
+
+----
+===============================
+
+3.  You can now start your training job by entering the command below:
++
+[source,bash]
+----
+kubectl apply -f train.yaml
+----
++
+You should see output as shown below:
++
+[source,bash]
+----
+trainingjob.sagemaker.aws.amazon.com/xgboost-mnist created
+----
++
+
+4.  You can describe your training job by entering the command below to get additional details including status of your job:
++
+[source,bash,subs="verbatim,quotes"]
+----
+kubectl describe trainingjob xgboost-mnist
+----
++
+You should see output as shown below:
++
+[source,bash,subs="verbatim,quotes"]
+----
+Name:         xgboost-mnist
+Namespace:    default
+Labels:       <none>
+Annotations:  API Version:  sagemaker.aws.amazon.com/v1
+Kind:         TrainingJob
+Metadata:
+  Creation Timestamp:  2020-04-08T04:10:05Z
+  Finalizers:
+    sagemaker-operator-finalizer
+  Generation:        2
+  Resource Version:  49213
+  Self Link:         /apis/sagemaker.aws.amazon.com/v1/namespaces/default/trainingjobs/xgboost-mnist
+  UID:               d39e36a6-794e-11ea-947b-16810ea13fa1
+Spec:
+  Algorithm Specification:
+    Training Image:       811284229777.dkr.ecr.us-east-1.amazonaws.com/xgboost:latest
+    Training Input Mode:  File
+  Hyper Parameters:
+    Name:   max_depth
+    Value:  5
+    Name:   eta
+    Value:  0.2
+    Name:   gamma
+    Value:  4
+    Name:   min_child_weight
+    Value:  6
+    Name:   silent
+    Value:  0
+    Name:   objective
+    Value:  multi:softmax
+    Name:   num_class
+    Value:  10
+    Name:   num_round
+    Value:  10
+  Input Data Config:
+    Channel Name:      train
+    Compression Type:  None
+    Content Type:      text/csv
+    Data Source:
+      File System Data Source:
+        Directory Path:           /ublgnbmv/xgboost-mnist
+        File System Access Mode:  ro
+        File System Id:           fs-02ab629ee455e7190
+        File System Type:         FSxLustre
+    Channel Name:                 validation
+    Compression Type:             None
+    Content Type:                 text/csv
+    Data Source:
+      File System Data Source:
+        Directory Path:           /ublgnbmv/xgboost-mnist
+        File System Access Mode:  ro
+        File System Id:           fs-02ab629ee455e7190
+        File System Type:         FSxLustre
+  Output Data Config:
+    s3OutputPath:  s3://fsx-csi-kurdekar/xgboost-mnist/models/
+  Region:          us-east-1
+  Resource Config:
+    Instance Count:     1
+    Instance Type:      ml.m4.xlarge
+    Volume Size In GB:  5
+  Role Arn:             arn:aws:iam::012345678910:role/sagemaker-eks-execution-role
+  Stopping Condition:
+    Max Runtime In Seconds:  86400
+  Training Job Name:         xgboost-mnist-d39e36a6794e11ea947b16810ea13fa1
+  Vpc Config:
+    Security Group Ids:
+      sg-0ebce8827e27b4046
+    Subnets:
+      subnet-08f56b8a52f00fcc0
+Status:
+  Cloud Watch Log URL:           https://us-east-1.console.aws.amazon.com/cloudwatch/home?region=us-east-1#logStream:group=/aws/sagemaker/TrainingJobs;prefix=xgboost-mnist-d39e36a6794e11ea947b16810ea13fa1;streamFilter=typeLogStreamPrefix
+  Sage Maker Training Job Name:  xgboost-mnist-d39e36a6794e11ea947b16810ea13fa1
+  Secondary Status:              Starting
+  Training Job Status:           InProgress
+Events:                          <none>
+----
++
+
+5. Monitor your training job by entering the commands. You can see the job transitioning to different stages as highlighted below:
++
+[source,bash,subs="verbatim,quotes"]
+----
+kubectl get trainingjob xgboost-mnist
+----
++
+You will see outputs as shown below and the changing status of the training jobs:
++
+[source,bash,subs="verbatim,quotes"]
+----
+NAME            STATUS       SECONDARY-STATUS   CREATION-TIME          SAGEMAKER-JOB-NAME
+xgboost-mnist   InProgress   Starting           2020-04-08T04:10:05Z   xgboost-mnist-d39e36a6794e11ea947b16810ea13fa1
+
+NAME            STATUS       SECONDARY-STATUS   CREATION-TIME          SAGEMAKER-JOB-NAME
+xgboost-mnist   InProgress   Downloading        2020-04-08T04:10:05Z   xgboost-mnist-d39e36a6794e11ea947b16810ea13fa1
+
+NAME            STATUS       SECONDARY-STATUS   CREATION-TIME          SAGEMAKER-JOB-NAME
+xgboost-mnist   InProgress   Training           2020-04-08T04:10:05Z   xgboost-mnist-d39e36a6794e11ea947b16810ea13fa1
+
+NAME            STATUS      SECONDARY-STATUS   CREATION-TIME          SAGEMAKER-JOB-NAME
+xgboost-mnist   Completed   Completed          2020-04-08T04:49:18Z   xgboost-mnist-4df8c4b3795411eabdb41220f1cedf23
+----
++
+
+
+
+
+== Next section
+
+Click the button below to go to the next section.
+
+image::06-cleanup-resources.png[link=../06-cleanup-resources/, align="left",width=420]
+
+
