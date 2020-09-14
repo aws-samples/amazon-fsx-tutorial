@@ -66,17 +66,14 @@ a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/h
 | *Oregon* (us-west-2)
 a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
 
-| *Frankfurt* (eu-central-1)
-a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
+| *Hong Kong* (ap-east-1)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=ap-east-1#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
 
-| *Ireland* (eu-west-1)
-a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
+| *Mumbai* (ap-south-1)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=ap-south-1#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
 
-| *London* (eu-west-2)
-a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=eu-west-2#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
-
-| *Stockholm* (eu-north-1)
-a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=eu-north-1#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
+| *Seoul* (ap-northeast-2)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=ap-northeast-2#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
 
 | *Singapore* (ap-southeast-1)
 a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-1#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
@@ -87,8 +84,27 @@ a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/h
 | *Tokyo* (ap-northeast-1)
 a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=ap-northeast-1#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
 
-| *Hong Kong* (ap-east-1)
-a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=ap-east-1#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
+| *Canada* (ca-central-1)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=ca-central-1#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
+
+| *Frankfurt* (eu-central-1)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
+
+| *Ireland* (eu-west-1)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
+
+| *London* (eu-west-2)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=eu-west-2#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
+
+| *Paris* (eu-west-3)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=eu-west-3#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
+
+| *Stockholm* (eu-north-1)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=eu-north-1#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
+
+| *São Paulo* (sa-east-1)
+a| image::deploy-to-aws.png[link=https://console.aws.amazon.com/cloudformation/home?region=sa-east-1#/stacks/new?stackName=fsx-drt-scheduler&templateURL=https://solution-references.s3.amazonaws.com/fsx/data-repository-task-scheduler.yaml]
+
 |===
 
 
